@@ -23,7 +23,7 @@ coreos:
       Restart=on-failure
       RestartSec=20
       TimeoutStartSec=0
-      Environment=ZOOKEEPER_HOSTS=172.18.4.5:2888:3888,172.18.4.562888:3888,172.18.4.7:2888:3888
+      Environment=ZOOKEEPER_HOSTS=172.18.4.5:2888:3888,172.18.4.6:2888:3888,172.18.4.7:2888:3888
       Environment=LOCAL_ZK_IP=$private_ipv4
       ExecStartPre=/bin/bash /home/vmuser/zookeeper/create_config.sh
       ExecStartPre=-/usr/bin/docker rm -f zookeeper
