@@ -45,7 +45,7 @@ resource "azurerm_network_interface" "nic" {
     name                          = "${azurerm_resource_group.rg.name}-ipconfig0"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "172.18.4.4"
+    private_ip_address            = "172.18.4.5"
     primary                       = true
   }
 
@@ -53,35 +53,35 @@ resource "azurerm_network_interface" "nic" {
     name                          = "${azurerm_resource_group.rg.name}-ipconfig1"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "172.18.4.5"
+    private_ip_address            = "172.18.4.6"
   }
 
   ip_configuration {
     name                          = "${azurerm_resource_group.rg.name}-ipconfig2"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "172.18.4.6"
+    private_ip_address            = "172.18.4.7"
   }
 
   ip_configuration {
     name                          = "${azurerm_resource_group.rg.name}-ipconfig3"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "172.18.4.7"
+    private_ip_address            = "172.18.4.8"
   }
 
   ip_configuration {
     name                          = "${azurerm_resource_group.rg.name}-ipconfig4"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "172.18.4.8"
+    private_ip_address            = "172.18.4.9"
   }
 
   ip_configuration {
     name                          = "${azurerm_resource_group.rg.name}-ipconfig5"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "172.18.4.9"
+    private_ip_address            = "172.18.4.10"
   }
 
   tags {

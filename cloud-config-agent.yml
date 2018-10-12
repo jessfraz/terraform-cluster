@@ -34,7 +34,7 @@ coreos:
           -p 5051:5051 \
           -e MESOS_IP=$private_ipv4 \
           -e MESOS_HOSTNAME=$private_ipv4 \
-          -e MESOS_MASTER=zk://172.18.4.4:2181,172.18.4.5:2181,172.18.4.6:2181/mesos \
+          -e MESOS_MASTER=zk://172.18.4.5:2181,172.18.4.6:2181,172.18.4.7:2181/mesos \
           -e MESOS_LOG_DIR=/var/log/mesos/agent \
           -e MESOS_WORK_DIR=/var/lib/mesos/agent \
           -e MESOS_EXECUTOR_REGISTRATION_TIMEOUT=5mins \

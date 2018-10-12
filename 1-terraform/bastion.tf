@@ -46,7 +46,8 @@ resource "azurerm_network_interface" "bastion_nic" {
     name                          = "${azurerm_resource_group.rg.name}-bastion-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     public_ip_address_id          = "${azurerm_public_ip.bastion_public_ip.id}"
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "172.18.4.4"
   }
 
   tags {
