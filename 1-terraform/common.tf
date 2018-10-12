@@ -36,49 +36,98 @@ resource "azurerm_public_ip" "public_ip" {
   }
 }
 
-resource "azurerm_network_interface" "nic" {
-  name                = "${azurerm_resource_group.rg.name}-nic"
+resource "azurerm_network_interface" "nic0" {
+  name                = "${azurerm_resource_group.rg.name}-nic0"
   location            = "${azurerm_resource_group.rg.location}"
   resource_group_name = "${azurerm_resource_group.rg.name}"
 
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.name}-ipconfig0"
+    name                          = "${azurerm_resource_group.rg.name}-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "172.18.4.5"
-    primary                       = true
   }
 
+  tags {
+    app = "mesos-cluster"
+  }
+}
+
+resource "azurerm_network_interface" "nic1" {
+  name                = "${azurerm_resource_group.rg.name}-nic1"
+  location            = "${azurerm_resource_group.rg.location}"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.name}-ipconfig1"
+    name                          = "${azurerm_resource_group.rg.name}-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "172.18.4.6"
   }
 
+  tags {
+    app = "mesos-cluster"
+  }
+}
+
+resource "azurerm_network_interface" "nic2" {
+  name                = "${azurerm_resource_group.rg.name}-nic2"
+  location            = "${azurerm_resource_group.rg.location}"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.name}-ipconfig2"
+    name                          = "${azurerm_resource_group.rg.name}-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "172.18.4.7"
   }
 
+  tags {
+    app = "mesos-cluster"
+  }
+}
+
+resource "azurerm_network_interface" "nic3" {
+  name                = "${azurerm_resource_group.rg.name}-nic3"
+  location            = "${azurerm_resource_group.rg.location}"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.name}-ipconfig3"
+    name                          = "${azurerm_resource_group.rg.name}-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "172.18.4.8"
   }
 
+  tags {
+    app = "mesos-cluster"
+  }
+}
+
+resource "azurerm_network_interface" "nic4" {
+  name                = "${azurerm_resource_group.rg.name}-nic4"
+  location            = "${azurerm_resource_group.rg.location}"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.name}-ipconfig4"
+    name                          = "${azurerm_resource_group.rg.name}-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "172.18.4.9"
   }
 
+  tags {
+    app = "mesos-cluster"
+  }
+}
+
+resource "azurerm_network_interface" "nic5" {
+  name                = "${azurerm_resource_group.rg.name}-nic5"
+  location            = "${azurerm_resource_group.rg.location}"
+  resource_group_name = "${azurerm_resource_group.rg.name}"
+
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.name}-ipconfig5"
+    name                          = "${azurerm_resource_group.rg.name}-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "172.18.4.10"

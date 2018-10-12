@@ -6,13 +6,13 @@ resource "azurerm_virtual_machine" "agent0" {
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
   vm_size               = "${var.vmsize}"
-  network_interface_ids = ["${azurerm_network_interface.nic.id}"]
+  network_interface_ids = ["${azurerm_network_interface.nic3.id}"]
 
   connection {
     type         = "ssh"
     bastion_host = "${azurerm_public_ip.bastion_public_ip.fqdn}"
     bastion_user = "${var.username}"
-    host         = "${element(azurerm_network_interface.nic.*.private_ip_address, 3)}"
+    host         = "${element(azurerm_network_interface.nic3.*.private_ip_address, count.index)}"
     user         = "${var.username}"
     agent        = true
   }
@@ -59,13 +59,13 @@ resource "azurerm_virtual_machine" "agent1" {
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
   vm_size               = "${var.vmsize}"
-  network_interface_ids = ["${azurerm_network_interface.nic.id}"]
+  network_interface_ids = ["${azurerm_network_interface.nic4.id}"]
 
   connection {
     type         = "ssh"
     bastion_host = "${azurerm_public_ip.bastion_public_ip.fqdn}"
     bastion_user = "${var.username}"
-    host         = "${element(azurerm_network_interface.nic.*.private_ip_address, 4)}"
+    host         = "${element(azurerm_network_interface.nic4.*.private_ip_address, count.index)}"
     user         = "${var.username}"
     agent        = true
   }
@@ -112,13 +112,13 @@ resource "azurerm_virtual_machine" "agent2" {
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
   vm_size               = "${var.vmsize}"
-  network_interface_ids = ["${azurerm_network_interface.nic.id}"]
+  network_interface_ids = ["${azurerm_network_interface.nic5.id}"]
 
   connection {
     type         = "ssh"
     bastion_host = "${azurerm_public_ip.bastion_public_ip.fqdn}"
     bastion_user = "${var.username}"
-    host         = "${element(azurerm_network_interface.nic.*.private_ip_address, 5)}"
+    host         = "${element(azurerm_network_interface.nic5.*.private_ip_address, count.index)}"
     user         = "${var.username}"
     agent        = true
   }
