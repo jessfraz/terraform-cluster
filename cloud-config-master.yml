@@ -1,0 +1,70 @@
+#cloud-config
+
+---
+coreos:
+  etcd:
+    discovery: "https://discovery.etcd.io/1d77508dc31cf372d517ed2e96e8f5cf"
+    advertise-client-urls: "http://$private_ipv4:2379"
+    initial-advertise-peer-urls:  "http://$private_ipv4:2380"
+    listen_client_urls:          "http://0.0.0.0:2379"
+    listen_peer_urls:            "http://$private_ipv4:2380"
+  units:
+  - name: zookeeper.service
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      Description=Zookeeper
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      StandardOutput=console
+      Restart=on-failure
+      RestartSec=20
+      TimeoutStartSec=0
+      Environment=ZOOKEEPER_HOSTS=172.18.4.4:2888:3888,172.18.4.5:2888:3888,172.18.4.6:2888:3888
+      Environment=LOCAL_ZK_IP=$private_ipv4
+      ExecStartPre=/bin/bash /home/vmuser/zookeeper/create_config.sh
+      ExecStartPre=-/usr/bin/docker rm -f zookeeper
+      ExecStartPre=-/usr/bin/docker pull r.j3ss.co/zookeeper:3.4
+      ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+        --net=host \
+        --name=zookeeper \
+        -v /opt/zookeeper/conf/zoo.cfg:/opt/zookeeper/conf/zoo.cfg \
+        -v /var/lib/zookeeper:/var/lib/zookeeper \
+        r.j3ss.co/zookeeper:3.4"
+      ExecStop=/usr/bin/docker stop zookeeper
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: mesos-master.service
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      Description=Mesos Master
+      After=zookeeper.service
+      Requires=docker.service
+
+      [Service]
+      Restart=on-failure
+      RestartSec=20
+      TimeoutStartSec=0
+      ExecStartPre=-/usr/bin/docker rm -f mesos-master
+      ExecStartPre=-/usr/bin/docker pull mesosphere/mesos-master:1.7.0
+      ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+          --name=mesos-master \
+          --net=host \
+          -e MESOS_IP=$private_ipv4 \
+          -e MESOS_HOSTNAME=$private_ipv4 \
+          -e MESOS_CLUSTER=mesos-cluster \
+          -e MESOS_ZK=zk://172.18.4.4:2181,172.18.4.5:2181,172.18.4.6:2181/mesos \
+          -e MESOS_LOG_DIR=/var/log/mesos/master \
+          -e MESOS_WORK_DIR=/var/lib/mesos/master \
+          -e MESOS_QUORUM=2 \
+          mesosphere/mesos-master:1.7.0"
+      ExecStop=/usr/bin/docker stop mesos-master
+
+      [Install]
+      WantedBy=multi-user.target

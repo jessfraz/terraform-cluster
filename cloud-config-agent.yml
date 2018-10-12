@@ -1,0 +1,50 @@
+#cloud-config
+
+---
+coreos:
+  etcd:
+    discovery: "https://discovery.etcd.io/1d77508dc31cf372d517ed2e96e8f5cf"
+    advertise-client-urls: "http://$private_ipv4:2379"
+    initial-advertise-peer-urls:  "http://$private_ipv4:2380"
+    listen_client_urls:          "http://0.0.0.0:2379"
+    listen_peer_urls:            "http://$private_ipv4:2380"
+  units:
+  - name: mesos-agent.service
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      Description=Mesos Agent
+      After=mesos-master.service
+      Requires=docker.service
+
+      [Service]
+      Restart=on-failure
+      RestartSec=20
+      TimeoutStartSec=0
+      ExecStartPre=-/usr/bin/docker rm -f mesos-agent
+      ExecStartPre=-/usr/bin/docker pull mesosphere/mesos-agent:1.7.0
+      ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+          --name=mesos-agent \
+          --net=host \
+          --privileged \
+          -v /sys:/sys \
+          -v /usr/bin/docker:/usr/bin/docker:ro \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          -p 5051:5051 \
+          -e MESOS_IP=$private_ipv4 \
+          -e MESOS_HOSTNAME=$private_ipv4 \
+          -e MESOS_MASTER=zk://172.18.4.4:2181,172.18.4.5:2181,172.18.4.6:2181/mesos \
+          -e MESOS_LOG_DIR=/var/log/mesos/agent \
+          -e MESOS_WORK_DIR=/var/lib/mesos/agent \
+          -e MESOS_EXECUTOR_REGISTRATION_TIMEOUT=5mins \
+          mesosphere/mesos-agent:1.7.0 \
+          --containerizers=docker,mesos \
+          --image_providers=docker \
+          --isolation=filesystem/linux,docker/runtime \
+          --executor_shutdown_grace_period=60secs \
+          --docker_stop_timeout=50secs"
+      ExecStop=/usr/bin/docker stop mesos-agent
+
+      [Install]
+      WantedBy=multi-user.target
