@@ -36,13 +36,16 @@ The base image for all the virtual machines
 is [CoreOS Container Linux](https://coreos.com/os/docs/latest/).
 
 The cloud-config.yml files defines the servers running on each of the hosts.
-The hosts are designed to be super minimal.
+The hosts are designed to be super minimal. This is done via the 
+[CoreOS Cloud Configuration](https://coreos.com/os/docs/latest/cloud-config.html).
 
 ### Mesos
 
 On the **bastion server** we run:
 
-- [Mesos Marathon](https://mesosphere.github.io/marathon/)
+- [Mesos Marathon](https://mesosphere.github.io/marathon/). **This is opened on
+    port 80 by default so you will want to change that if you want your cluster
+    to be secure.** This is only done so it is easy to demo.
 
 On the **masters** we run:
 
