@@ -26,8 +26,7 @@ coreos:
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
           --name marathon \
           -e LIBPROCESS_PORT=9090 \
-          -p 80:8080 \
-          -p 9090:9090 \
+          --net host \
           mesosphere/marathon:v1.7.166 \
           --master zk://172.18.4.5:2181,172.18.4.6:2181,172.18.4.7:2181,172.18.4.8:2181,172.18.4.9:2181/mesos \
           --zk zk://172.18.4.5:2181,172.18.4.6:2181,172.18.4.7:2181,172.18.4.8:2181,172.18.4.9:2181/marathon \

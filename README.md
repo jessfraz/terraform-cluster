@@ -44,7 +44,7 @@ The hosts are designed to be super minimal. This is done via the
 On the **bastion server** we run:
 
 - [Mesos Marathon](https://mesosphere.github.io/marathon/). **This is opened on
-    port 80 by default so you will want to change that if you want your cluster
+    port 8080 by default so you will want to change that if you want your cluster
     to be secure.** This is only done so it is easy to demo.
 
 On the **masters** we run:
