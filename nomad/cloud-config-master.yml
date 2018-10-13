@@ -75,6 +75,7 @@ coreos:
         -e SERVICE_IGNORE=true \
         --net=host \
         --volume /etc/nomad.d:/etc/nomad.d \
+        --volume /etc/consul/certs:/etc/consul/certs:ro \
         --name=nomad \
         r.j3ss.co/nomad:latest \
           agent -config=/etc/nomad.d/server.hcl"
@@ -129,6 +130,13 @@ write_files:
       bootstrap_expect = 4
 
       encrypt = "NOMAD_GOSSIP_ENCRYPTION_SECRET"
+    }
+    consul {
+      address = "127.0.0.1:8501"
+      ca_file = "/etc/consul/certs/ca.pem"
+      cert_file = "/etc/consul/certs/server.pem"
+      key_file = "/etc/consul/certs/server-key.pem"
+      ssl = true
     }
 - path: "/etc/consul.d/config.json"
   permissions: "0644"
