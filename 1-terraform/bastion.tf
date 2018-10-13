@@ -34,7 +34,7 @@ resource "azurerm_network_security_group" "bastion_nsg" {
   security_rule {
     name                       = "allow_HTTP_in_all"
     description                = "Allow HTTP in from all locations"
-    priority                   = 100
+    priority                   = 101
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
