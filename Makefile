@@ -49,7 +49,7 @@ mesos-init:
 		-var "location=$(LOCATION)"
 
 .PHONY: mesos-apply
-mesos-apply: az-init ## Run terraform apply for mesos.
+mesos-apply: mesos-init ## Run terraform apply for mesos.
 	@cd $(MESOS_TFDIR) && terraform apply \
 		-var "client_id=$(CLIENT_ID)"  \
 		-var "client_secret=$(CLIENT_SECRET)"  \
@@ -59,7 +59,7 @@ mesos-apply: az-init ## Run terraform apply for mesos.
 		-var "location=$(LOCATION)"
 
 .PHONY: mesos-destroy
-mesos-destroy: az-init ## Run terraform destroy for mesos.
+mesos-destroy: mesos-init ## Run terraform destroy for mesos.
 	@cd $(MESOS_TFDIR) && terraform destroy \
 		-var "client_id=$(CLIENT_ID)"  \
 		-var "client_secret=$(CLIENT_SECRET)"  \
