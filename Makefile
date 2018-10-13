@@ -144,7 +144,7 @@ nomad-certs:
 
 .PHONY: certs-config
 certs-config: consul-certs nomad-certs
-	./nomad/certs-config.sh
+	CERTDIR=$(CERTDIR) NOMAD_TMPDIR=$(NOMAD_TMPDIR) ./nomad/certs-config.sh
 
 .PHONY: nomad-apply
 nomad-apply: nomad-init nomad-config certs-config ## Run terraform apply for nomad.
