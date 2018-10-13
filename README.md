@@ -59,6 +59,10 @@ On the **agents** we run:
 
 ### Nomad
 
+On each server there are helpers in the `bashrc` so that you can run `nomad`
+and `consul` commands from the host. This just uses a container under the hood
+and you can see the alias with `type nomad`.
+
 On the **bastion server** we run:
 
 - _nothing_

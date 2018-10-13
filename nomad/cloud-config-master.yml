@@ -50,7 +50,9 @@ coreos:
       Description=Consul Announcer
       PartOf=consul.service
       After=consul.service
+
       [Service]
+      StandardOutput=console
       Restart=on-failure
       RestartSec=20
       Environment=NOMAD_HOSTS=172.18.4.5,172.18.4.6,172.18.4.7,172.18.4.8,172.18.4.9
@@ -82,6 +84,33 @@ coreos:
       [Install]
       WantedBy=multi-user.target
 write_files:
+- path: "/home/vmuser/.bashrc"
+  permissions: "0777"
+  owner: "vmuser"
+  content: |
+    # /etc/skel/.bashrc
+    #
+    # This file is sourced by all *interactive* bash shells on startup,
+    # including some apparently interactive shells such as scp and rcp
+    # that can't tolerate any output.  So make sure this doesn't display
+    # anything or bad things will happen !
+
+
+    # Test for an interactive shell.  There is no need to set anything
+    # past this point for scp and rcp, and it's important to refrain from
+    # outputting anything in those cases.
+    if [[ $- != *i* ]] ; then
+            # Shell is non-interactive.  Be done now!
+            return
+    fi
+
+    consul(){
+      sudo docker run --rm -it --net host r.j3ss.co/consul $@
+    }
+
+    nomad(){
+      sudo docker run --rm -it --net host r.j3ss.co/nomad $@
+    }
 - path: "/etc/nomad.d/server.hcl"
   permissions: "0644"
   owner: "root"
@@ -104,7 +133,7 @@ write_files:
     # Add the hosts.
     if [ -n "${NOMAD_HOSTS+1}" ]; then
       IFS=',' read -r -a nhosts <<< "$NOMAD_HOSTS"
-      for index in "${!nhosts[@]}"; do
-        /usr/bin/docker run --rm --net host r.j3ss.co/consul:latest join "$index"
+      for host in "${nhosts[@]}"; do
+        /usr/bin/docker run --rm --net host r.j3ss.co/consul:latest join "$host"
       done
     fi
