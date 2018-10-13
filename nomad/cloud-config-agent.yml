@@ -61,7 +61,10 @@ write_files:
     }
 
     nomad(){
-      sudo docker run --rm -it --net host r.j3ss.co/nomad $@
+      sudo docker run --rm -it --net host \
+        -v $(pwd):/usr/src \
+        --workdir /usr/src \
+        r.j3ss.co/nomad $@
     }
 - path: "/etc/nomad.d/client.hcl"
   permissions: "0644"
