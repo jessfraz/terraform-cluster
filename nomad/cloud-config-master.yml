@@ -1,0 +1,95 @@
+#cloud-config
+
+---
+coreos:
+  etcd:
+    discovery: "https://discovery.etcd.io/1d77508dc31cf372d517ed2e96e8f5cf"
+    advertise-client-urls: "http://$private_ipv4:2379"
+    initial-advertise-peer-urls:  "http://$private_ipv4:2380"
+    listen_client_urls:          "http://0.0.0.0:2379"
+    listen_peer_urls:            "http://$private_ipv4:2380"
+  units:
+  - name: consul.service
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      Description=Consul
+      After=docker.service
+      Requires=docker.service
+      Wants=consul-announce.service
+      Before=consul-announce.service
+
+      [Service]
+      Restart=on-failure
+      RestartSec=20
+      TimeoutStartSec=0
+      ExecStartPre=-/usr/bin/docker rm -f consul
+      ExecStartPre=-/usr/bin/docker pull r.j3ss.co/consul:latest
+      ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+        --restart=always \
+        -e SERVICE_IGNORE=true \
+        --net=host \
+        --volume /opt/consul:/data \
+        --name=consul \
+        r.j3ss.co/consul:latest \
+          -bootstrap-expect 3 \
+          -advertise $private_ipv4"
+      ExecStop=/usr/bin/docker stop consul
+
+      [Install]
+      WantedBy=multi-user.target
+  - name: consul-announce.service
+    command: start
+    content: |
+      [Unit]
+      Description=Consul Announcer
+      PartOf=consul.service
+      After=consul.service
+      [Service]
+      EnvironmentFile=/etc/environment
+      ExecStart=/bin/sh -c '\
+        while true; do \
+          etcdctl set /consul.io/bootstrap/machines/$(cat /etc/machine-id) $private_ipv4 --ttl 60; \
+          /usr/bin/docker exec consul-server consul join $(for x in $(etcdctl ls /consul.io/bootstrap/machines);do echo -n "$(etcdctl get $x) ";done); \
+          sleep 45; \
+        done'
+      ExecStop=-/bin/sh -c '/usr/bin/etcdctl rm /consul/bootstrap/machines/$(cat /etc/machine-id)'
+  - name: nomad.service
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      Description=Nomad Server
+      After=docker.service consul.service consul-announce.service
+      Requires=docker.service consul.service
+
+      [Service]
+      Restart=on-failure
+      RestartSec=20
+      TimeoutStartSec=0
+      ExecStartPre=-/usr/bin/docker rm -f nomad
+      ExecStartPre=-/usr/bin/docker pull r.j3ss.co/nomad:latest
+      ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+        --restart=always \
+        -e SERVICE_IGNORE=true \
+        --net=host \
+        --volume /etc/nomad.d:/etc/nomad.d \
+        --name=nomad \
+        r.j3ss.co/nomad:latest \
+          agent -config=/etc/nomad.d/server.hcl"
+      ExecStop=/usr/bin/docker stop nomad
+
+      [Install]
+      WantedBy=multi-user.target
+  write_files:
+  - path: "/etc/nomad.d/server.hcl"
+    permissions: "0644"
+    owner: "root"
+    content: |
+      data_dir = "/etc/nomad.d"
+
+      server {
+        enabled          = true
+        bootstrap_expect = 3
+      }
