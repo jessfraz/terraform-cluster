@@ -28,6 +28,7 @@ coreos:
         -e SERVICE_IGNORE=true \
         --net=host \
         --volume /etc/nomad.d:/etc/nomad.d \
+				--volume /var/run/docker.sock:/var/run/docker.sock \
         --name=nomad \
         r.j3ss.co/nomad:latest \
           agent -config=/etc/nomad.d/client.hcl"
@@ -75,4 +76,8 @@ write_files:
     client {
       enabled          = true
       servers = ["172.18.4.5:4647","172.18.4.6:4647","172.18.4.7:4647","172.18.4.8:4647","172.18.4.9:4647"]
+
+			options = {
+    		"driver.whitelist" = "docker"
+  		}
     }

@@ -35,6 +35,7 @@ coreos:
         r.j3ss.co/consul:latest \
           agent \
           -server \
+          -datacenter dc1 \
           -bootstrap-expect 4 \
           -data-dir /opt/consul \
           -config-dir /etc/consul.d \
