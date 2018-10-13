@@ -36,6 +36,15 @@ shellcheck: ## Run shellcheck on all scripts in the repository.
 		--workdir /usr/src \
 		r.j3ss.co/shellcheck ./test.sh
 
+TERRAFORM_FLAGS = -var "client_id=$(CLIENT_ID)"  \
+		-var "client_secret=$(CLIENT_SECRET)"  \
+		-var "tenant_id=$(TENANT_ID)"  \
+		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
+		-var "prefix=$(PREFIX)" \
+		-var "location=$(LOCATION)" \
+		-var "master_count=$(MASTER_COUNT)" \
+		-var "agent_count="$(AGENT_COUNT)
+
 MESOS_TFDIR=$(CURDIR)/mesos/terraform
 .PHONY: mesos-init
 mesos-init:
@@ -43,39 +52,18 @@ mesos-init:
 	@:$(call check_defined, CLIENT_SECRET, Azure Client Secret)
 	@:$(call check_defined, TENANT_ID, Azure Tenant ID)
 	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
-	@cd $(MESOS_TFDIR) && terraform init \
-		-var "client_id=$(CLIENT_ID)"  \
-		-var "client_secret=$(CLIENT_SECRET)"  \
-		-var "tenant_id=$(TENANT_ID)"  \
-		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
-		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)" \
-		-var "master_count=$(MASTER_COUNT)" \
-		-var "agent_count="$(AGENT_COUNT)
+	cd $(MESOS_TFDIR) && terraform init \
+		$(TERRAFORM_FLAGS)
 
 .PHONY: mesos-apply
 mesos-apply: mesos-init ## Run terraform apply for mesos.
-	@cd $(MESOS_TFDIR) && terraform apply \
-		-var "client_id=$(CLIENT_ID)"  \
-		-var "client_secret=$(CLIENT_SECRET)"  \
-		-var "tenant_id=$(TENANT_ID)"  \
-		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
-		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)" \
-		-var "master_count=$(MASTER_COUNT)" \
-		-var "agent_count="$(AGENT_COUNT)
+	cd $(MESOS_TFDIR) && terraform apply \
+		$(TERRAFORM_FLAGS)
 
 .PHONY: mesos-destroy
 mesos-destroy: mesos-init ## Run terraform destroy for mesos.
-	@cd $(MESOS_TFDIR) && terraform destroy \
-		-var "client_id=$(CLIENT_ID)"  \
-		-var "client_secret=$(CLIENT_SECRET)"  \
-		-var "tenant_id=$(TENANT_ID)"  \
-		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
-		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)" \
-		-var "master_count=$(MASTER_COUNT)" \
-		-var "agent_count="$(AGENT_COUNT)
+	cd $(MESOS_TFDIR) && terraform destroy \
+		$(TERRAFORM_FLAGS)
 
 NOMAD_TFDIR=$(CURDIR)/nomad/terraform
 .PHONY: nomad-init
@@ -84,39 +72,18 @@ nomad-init:
 	@:$(call check_defined, CLIENT_SECRET, Azure Client Secret)
 	@:$(call check_defined, TENANT_ID, Azure Tenant ID)
 	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
-	@cd $(NOMAD_TFDIR) && terraform init \
-		-var "client_id=$(CLIENT_ID)"  \
-		-var "client_secret=$(CLIENT_SECRET)"  \
-		-var "tenant_id=$(TENANT_ID)"  \
-		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
-		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)" \
-		-var "master_count=$(MASTER_COUNT)" \
-		-var "agent_count="$(AGENT_COUNT)
+	cd $(NOMAD_TFDIR) && terraform init \
+		$(TERRAFORM_FLAGS)
 
 .PHONY: nomad-apply
 nomad-apply: nomad-init ## Run terraform apply for nomad.
-	@cd $(NOMAD_TFDIR) && terraform apply \
-		-var "client_id=$(CLIENT_ID)"  \
-		-var "client_secret=$(CLIENT_SECRET)"  \
-		-var "tenant_id=$(TENANT_ID)"  \
-		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
-		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)" \
-		-var "master_count=$(MASTER_COUNT)" \
-		-var "agent_count="$(AGENT_COUNT)
+	cd $(NOMAD_TFDIR) && terraform apply \
+		$(TERRAFORM_FLAGS)
 
 .PHONY: nomad-destroy
 nomad-destroy: nomad-init ## Run terraform destroy for nomad.
-	@cd $(NOMAD_TFDIR) && terraform destroy \
-		-var "client_id=$(CLIENT_ID)"  \
-		-var "client_secret=$(CLIENT_SECRET)"  \
-		-var "tenant_id=$(TENANT_ID)"  \
-		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
-		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)" \
-		-var "master_count=$(MASTER_COUNT)" \
-		-var "agent_count="$(AGENT_COUNT)
+	cd $(NOMAD_TFDIR) && terraform destroy \
+		$(TERRAFORM_FLAGS)
 
 TMPDIR:=$(CURDIR)/_tmp
 
