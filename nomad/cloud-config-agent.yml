@@ -33,6 +33,7 @@ coreos:
         -v /run:/run \
         -v /usr/bin/docker:/usr/bin/docker:ro \
         -v /var/run/docker.sock:/var/run/docker.sock \
+        -v /etc/nomad/certs:/etc/nomad/certs:ro \
         --volume /etc/nomad.d:/etc/nomad.d \
         --name=nomad \
         r.j3ss.co/nomad:latest \
@@ -96,4 +97,16 @@ write_files:
       options = {
         "driver.whitelist" = "docker"
       }
+    }
+
+    tls {
+      http = true
+      rpc  = true
+
+      ca_file   = "/etc/nomad/certs/ca.pem"
+      cert_file = "/etc/nomad/certs/server.pem"
+      key_file  = "/etc/nomad/certs/server-key.pem"
+
+      #verify_server_hostname = true
+      verify_https_client    = true
     }
