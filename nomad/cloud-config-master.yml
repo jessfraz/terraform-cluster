@@ -51,14 +51,10 @@ coreos:
       PartOf=consul.service
       After=consul.service
       [Service]
-      EnvironmentFile=/etc/environment
-      ExecStart=/bin/sh -c '\
-        while true; do \
-          etcdctl set /consul.io/bootstrap/machines/$(cat /etc/machine-id) $private_ipv4 --ttl 60; \
-          /usr/bin/docker exec consul-server consul join $(for x in $(etcdctl ls /consul.io/bootstrap/machines);do echo -n "$(etcdctl get $x) ";done); \
-          sleep 45; \
-        done'
-      ExecStop=-/bin/sh -c '/usr/bin/etcdctl rm /consul/bootstrap/machines/$(cat /etc/machine-id)'
+      Restart=on-failure
+      RestartSec=20
+      Environment=NOMAD_HOSTS=172.18.4.5,172.18.4.6,172.18.4.7,172.18.4.8,172.18.4.9
+      ExecStart=/bin/bash /etc/consul/join.sh
   - name: nomad.service
     command: start
     enable: true
@@ -96,3 +92,19 @@ write_files:
       enabled          = true
       bootstrap_expect = 4
     }
+- path: "/etc/consul/join.sh"
+  permissions: "0744"
+  owner: "root"
+  content: |
+    #!/bin/bash
+    set -e
+    set -o pipefail
+    set -x
+
+    # Add the hosts.
+    if [ -n "${NOMAD_HOSTS+1}" ]; then
+      IFS=',' read -r -a nhosts <<< "$NOMAD_HOSTS"
+      for index in "${!nhosts[@]}"; do
+        /usr/bin/docker run --rm --net host r.j3ss.co/consul:latest join "$index"
+      done
+    fi

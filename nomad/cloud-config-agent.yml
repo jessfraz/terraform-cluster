@@ -15,8 +15,8 @@ coreos:
     content: |
       [Unit]
       Description=Nomad Agent
-      After=docker.service consul.service consul-announce.service
-      Requires=docker.service consul.service
+      After=docker.service
+      Requires=docker.service
 
       [Service]
       Restart=on-failure
