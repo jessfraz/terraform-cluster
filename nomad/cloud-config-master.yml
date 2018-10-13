@@ -30,16 +30,13 @@ coreos:
         -e SERVICE_IGNORE=true \
         --net=host \
         --volume /etc/consul.d:/etc/consul.d \
+        --volume /etc/consul/certs:/etc/consul/certs:ro \
         --volume /opt/consul:/opt/consul \
         --name=consul \
         r.j3ss.co/consul:latest \
           agent \
-          -server \
-          -datacenter dc1 \
           -bootstrap-expect 4 \
-          -data-dir /opt/consul \
           -config-dir /etc/consul.d \
-          -encrypt "CONSUL_GOSSIP_ENCRYPTION_SECRET" \
           -advertise $private_ipv4"
       ExecStop=/usr/bin/docker stop consul
 
@@ -133,6 +130,32 @@ write_files:
 
       encrypt = "NOMAD_GOSSIP_ENCRYPTION_SECRET"
     }
+- path: "/etc/consul.d/config.json"
+  permissions: "0644"
+  owner: "root"
+  content: |
+    {
+      "datacenter": "dc1",
+      "data_dir": "/opt/consul",
+      "log_level": "INFO",
+      "server": true,
+      "encrypt": "CONSUL_GOSSIP_ENCRYPTION_SECRET",
+      "verify_outgoing": true,
+      "verify_incoming": true,
+      "verify_incoming_rpc": true,
+      "verify_incoming_https": true,
+      "addresses": {
+        "https": "0.0.0.0"
+      },
+      "ports": {
+        "http": -1,
+        "https": 8501,
+        "grpc": 8502
+      },
+      "key_file": "/etc/consul/certs/server-key.pem",
+      "cert_file": "/etc/consul/certs/server.pem",
+      "ca_file": "/etc/consul/certs/ca.pem"
+    }
 - path: "/etc/consul/join.sh"
   permissions: "0744"
   owner: "root"
@@ -146,6 +169,12 @@ write_files:
     if [ -n "${NOMAD_HOSTS+1}" ]; then
       IFS=',' read -r -a nhosts <<< "$NOMAD_HOSTS"
       for host in "${nhosts[@]}"; do
-        /usr/bin/docker run --rm --net host r.j3ss.co/consul:latest join "$host"
+        /usr/bin/docker run --rm --net host \
+          -e CONSUL_HTTP_ADDR=https://127.0.0.1:8501 \
+          -e CONSUL_CACERT=/etc/consul/certs/ca.pem \
+          -e CONSUL_CLIENT_CERT=/etc/consul/certs/cli.pem \
+          -e CONSUL_CLIENT_KEY=/etc/consul/certs/cli-key.pem \
+          -v /etc/consul/certs:/etc/consul/certs:ro \
+          r.j3ss.co/consul:latest join "$host"
       done
     fi
