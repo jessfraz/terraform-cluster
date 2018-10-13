@@ -82,7 +82,7 @@ write_files:
       enabled          = true
       servers = ["172.18.4.5:4647","172.18.4.6:4647","172.18.4.7:4647","172.18.4.8:4647","172.18.4.9:4647"]
 
-			options = {
-    		"driver.whitelist" = "docker"
-  		}
+      options = {
+        "driver.whitelist" = "docker"
+      }
     }
