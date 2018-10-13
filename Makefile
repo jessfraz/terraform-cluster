@@ -112,45 +112,42 @@ consul-certs:
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
 		-ca=consul-ca.pem -ca-key=consul-ca-key.pem -config=cfssl.json \
 		-hostname="server.global.consul,localhost,127.0.0.1" - | \
-		$(CFSSLJSON_CMD) -bare server
+		$(CFSSLJSON_CMD) -bare consul-server
 	# generate a certificate for all the Consul clients in a specific region (global)
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
 		-ca=consul-ca.pem -ca-key=consul-ca-key.pem -config=cfssl.json \
 		-hostname="client.global.consul,localhost,127.0.0.1" - | \
-		$(CFSSLJSON_CMD) -bare server
+		$(CFSSLJSON_CMD) -bare consul-client
 	# generate a certificate for the cli
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
 		-ca=consul-ca.pem -ca-key=consul-ca-key.pem -profile=client - | \
-		$(CFSSLJSON_CMD) -bare cli
+		$(CFSSLJSON_CMD) -bare consul-cli
 
-.PHONY: consul-config
-consul-config: consul-certs
-	sudo chown -R $(USER):$(USER) $(CERTDIR)
-	@echo '- path: "/etc/consul/certs/ca.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/consul-ca.pem)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-master.yml
-	@echo '- path: "/etc/consul/certs/ca.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/consul-ca.pem)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-agent.yml
-	@echo '- path: "/etc/consul/certs/ca.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/consul-ca.pem)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-bastion.yml
-	@echo '- path: "/etc/consul/certs/server-key.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "gzip+base64"\n  content: |\n    $(shell sudo gzip -c $(CERTDIR)/server-key.pem | base64 -w0)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-master.yml
-	@echo '- path: "/etc/consul/certs/server.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/server.pem)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-master.yml
-	@echo '- path: "/etc/consul/certs/cli-key.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "gzip+base64"\n  content: |\n    $(shell sudo gzip -c $(CERTDIR)/cli-key.pem | base64 -w0)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-master.yml
-	@echo '- path: "/etc/consul/certs/cli.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/cli.pem)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-master.yml
-	@echo '- path: "/etc/consul/certs/cli-key.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "gzip+base64"\n  content: |\n    $(shell sudo gzip -c $(CERTDIR)/cli-key.pem | base64 -w0)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-agent.yml
-	@echo '- path: "/etc/consul/certs/cli.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/cli.pem)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-agent.yml
-	@echo '- path: "/etc/consul/certs/cli-key.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "gzip+base64"\n  content: |\n    $(shell sudo gzip -c $(CERTDIR)/cli-key.pem | base64 -w0)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-bastion.yml
-	@echo '- path: "/etc/consul/certs/cli.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/cli.pem)' \
-		>> $(NOMAD_TMPDIR)/cloud-config-bastion.yml
+.PHONY: nomad-certs
+nomad-certs:
+	# generate a private CA certificate (cnomad-ca.pem) and key (nomad-ca-key.pem)
+	$(CFSSL_CMD) gencert -initca $(CERTDIR)/ca-csr.json | $(CFSSLJSON_CMD) -bare nomad-ca
+	# generate a certificate for all the Nomad servers in a specific region (global)
+	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
+		-ca=nomad-ca.pem -ca-key=nomad-ca-key.pem -config=cfssl.json \
+		-hostname="server.global.nomad,localhost,127.0.0.1" - | \
+		$(CFSSLJSON_CMD) -bare nomad-server
+	# generate a certificate for all the Nomad clients in a specific region (global)
+	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
+		-ca=nomad-ca.pem -ca-key=nomad-ca-key.pem -config=cfssl.json \
+		-hostname="client.global.nomad,localhost,127.0.0.1" - | \
+		$(CFSSLJSON_CMD) -bare nomad-client
+	# generate a certificate for the cli
+	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
+		-ca=nomad-ca.pem -ca-key=nomad-ca-key.pem -profile=client - | \
+		$(CFSSLJSON_CMD) -bare nomad-cli
+
+.PHONY: certs-config
+certs-config: consul-certs nomad-certs
+	./nomad/certs-config.sh
 
 .PHONY: nomad-apply
-nomad-apply: nomad-init nomad-config consul-config ## Run terraform apply for nomad.
+nomad-apply: nomad-init nomad-config certs-config ## Run terraform apply for nomad.
 	cd $(NOMAD_TFDIR) && terraform apply \
 		$(TERRAFORM_FLAGS)
 
