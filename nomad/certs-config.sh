@@ -20,7 +20,7 @@ fi
 sudo chown -R "${USER}:${USER}" "$CERTDIR"
 
 # Create variables to hold base64+gzip encoded values of the files.
-CONSUL_CA=$(gzip "${CERTDIR}/consul-ca.pem" | base64 -w0)
+CONSUL_CA=$(gzip -c "${CERTDIR}/consul-ca.pem" | base64 -w0)
 
 CONSUL_SERVER_KEY=$(sudo gzip -c "${CERTDIR}/consul-server-key.pem" | base64 -w0)
 CONSUL_SERVER_CERT=$(gzip -c "${CERTDIR}/consul-server.pem" | base64 -w0)
@@ -28,7 +28,7 @@ CONSUL_SERVER_CERT=$(gzip -c "${CERTDIR}/consul-server.pem" | base64 -w0)
 CONSUL_CLI_KEY=$(sudo gzip -c "${CERTDIR}/consul-cli-key.pem" | base64 -w0)
 CONSUL_CLI_CERT=$(gzip -c "${CERTDIR}/consul-cli.pem" | base64 -w0)
 
-NOMAD_CA=$(gzip "${CERTDIR}/nomad-ca.pem" | base64 -w0)
+NOMAD_CA=$(gzip -c "${CERTDIR}/nomad-ca.pem" | base64 -w0)
 
 NOMAD_SERVER_KEY=$(sudo gzip -c "${CERTDIR}/nomad-server-key.pem" | base64 -w0)
 NOMAD_SERVER_CERT=$(gzip -c "${CERTDIR}/nomad-server.pem" | base64 -w0)
@@ -178,16 +178,16 @@ cat <<-EOF >> "${NOMAD_TMPDIR}/cloud-config-agent.yml"
   encoding: "gzip+base64"
   content: |
     ${NOMAD_CLI_CERT}
-- path: "/etc/nomad/certs/client-key.pem"
+- path: "/etc/nomad/certs/server-key.pem"
   permissions: "0644"
   owner: "root"
   encoding: "gzip+base64"
   content: |
-    ${NOMAD_CLIENT_KEY}
-- path: "/etc/nomad/certs/client.pem"
+    ${NOMAD_SERVER_KEY}
+- path: "/etc/nomad/certs/server.pem"
   permissions: "0644"
   owner: "root"
   encoding: "gzip+base64"
   content: |
-    ${NOMAD_CLIENT_CERT}
+    ${NOMAD_SERVER_CERT}
 EOF
