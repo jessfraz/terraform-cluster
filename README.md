@@ -51,13 +51,11 @@ See [creating a service principal](#creating-a-service-principal) on how to get
 these values.
 
 ```console
-$ make help 
+$ make help
 az-apply                       Run terraform apply for Azure.
 az-destroy                     Run terraform destroy for Azure.
-image                          Build the packer image.
 shellcheck                     Run shellcheck on all scripts in the repository.
 test                           Runs all the tests.
-update-packer                  Update packer binary locally from the docker container.
 update-terraform               Update terraform binary locally from the docker container.
 update                         Run all update targets.
 ```
@@ -101,8 +99,6 @@ These values map to the `Makefile` variables like so:
 
 **Reference docs:**
 
-- `packer` docs on setting up the right account and credentials:
-[here](https://www.packer.io/docs/builders/azure-setup.html).
 - `terraform` docs on setting up authentication:
 [here](https://www.terraform.io/docs/providers/azurerm/authenticating_via_service_principal.html).
 

@@ -33,54 +33,14 @@ shellcheck: ## Run shellcheck on all scripts in the repository.
 		--workdir /usr/src \
 		r.j3ss.co/shellcheck ./test.sh
 
-.PHONY: image
-image: az-apply-0 ## Build the packer image.
+AZURE_TFDIR=$(CURDIR)/terraform
+.PHONY: az-init
+az-init:
 	@:$(call check_defined, CLIENT_ID, Azure Client ID)
 	@:$(call check_defined, CLIENT_SECRET, Azure Client Secret)
 	@:$(call check_defined, TENANT_ID, Azure Tenant ID)
 	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
-	packer build \
-		-var "client_id=$(CLIENT_ID)"  \
-		-var "client_secret=$(CLIENT_SECRET)"  \
-		-var "tenant_id=$(TENANT_ID)"  \
-		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
-		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)" \
-		$(CURDIR)/packer.json
-
-AZURE_TFDIR0=$(CURDIR)/0-terraform
-.PHONY: az-init-0
-az-init-0:
-	@:$(call check_defined, CLIENT_ID, Azure Client ID)
-	@:$(call check_defined, CLIENT_SECRET, Azure Client Secret)
-	@:$(call check_defined, TENANT_ID, Azure Tenant ID)
-	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
-	@cd $(AZURE_TFDIR0) && terraform init \
-		-var "client_id=$(CLIENT_ID)"  \
-		-var "client_secret=$(CLIENT_SECRET)"  \
-		-var "tenant_id=$(TENANT_ID)"  \
-		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
-		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)"
-
-.PHONY: az-apply-0
-az-apply-0: az-init-0
-	@cd $(AZURE_TFDIR0) && terraform apply \
-		-var "client_id=$(CLIENT_ID)"  \
-		-var "client_secret=$(CLIENT_SECRET)"  \
-		-var "tenant_id=$(TENANT_ID)"  \
-		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
-		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)"
-
-AZURE_TFDIR1=$(CURDIR)/1-terraform
-.PHONY: az-init-1
-az-init-1:
-	@:$(call check_defined, CLIENT_ID, Azure Client ID)
-	@:$(call check_defined, CLIENT_SECRET, Azure Client Secret)
-	@:$(call check_defined, TENANT_ID, Azure Tenant ID)
-	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
-	@cd $(AZURE_TFDIR1) && terraform init \
+	@cd $(AZURE_TFDIR) && terraform init \
 		-var "client_id=$(CLIENT_ID)"  \
 		-var "client_secret=$(CLIENT_SECRET)"  \
 		-var "tenant_id=$(TENANT_ID)"  \
@@ -89,8 +49,8 @@ az-init-1:
 		-var "location=$(LOCATION)"
 
 .PHONY: az-apply
-az-apply: az-init-1 ## Run terraform apply for Azure.
-	@cd $(AZURE_TFDIR1) && terraform apply \
+az-apply: az-init ## Run terraform apply for Azure.
+	@cd $(AZURE_TFDIR) && terraform apply \
 		-var "client_id=$(CLIENT_ID)"  \
 		-var "client_secret=$(CLIENT_SECRET)"  \
 		-var "tenant_id=$(TENANT_ID)"  \
@@ -99,8 +59,8 @@ az-apply: az-init-1 ## Run terraform apply for Azure.
 		-var "location=$(LOCATION)"
 
 .PHONY: az-destroy
-az-destroy: az-init-1 ## Run terraform destroy for Azure.
-	@cd $(AZURE_TFDIR1) && terraform destroy \
+az-destroy: az-init ## Run terraform destroy for Azure.
+	@cd $(AZURE_TFDIR) && terraform destroy \
 		-var "client_id=$(CLIENT_ID)"  \
 		-var "client_secret=$(CLIENT_SECRET)"  \
 		-var "tenant_id=$(TENANT_ID)"  \
@@ -111,18 +71,7 @@ az-destroy: az-init-1 ## Run terraform destroy for Azure.
 TMPDIR:=$(CURDIR)/_tmp
 
 .PHONY: update
-update: update-packer update-terraform ## Run all update targets.
-
-PACKER_BINARY:=$(shell which packer || echo "/usr/local/bin/packer")
-TMP_PACKER_BINARY:=/tmp/packer
-.PHONY: update-packer
-update-packer: ## Update packer binary locally from the docker container.
-	@echo "Updating packer binary..."
-	$(shell docker run --rm --entrypoint bash r.j3ss.co/packer -c "cd \$\$$(dirname \$\$$(which packer)) && tar -Pc packer" | tar -xvC $(dir $(TMP_PACKER_BINARY)) > /dev/null)
-	sudo mv $(TMP_PACKER_BINARY) $(PACKER_BINARY)
-	sudo chmod +x $(PACKER_BINARY)
-	@echo "Update packer binary: $(PACKER_BINARY)"
-	@packer version
+update: update-terraform ## Run all update targets.
 
 TERRAFORM_BINARY:=$(shell which terraform || echo "/usr/local/bin/terraform")
 TMP_TERRAFORM_BINARY:=/tmp/terraform
