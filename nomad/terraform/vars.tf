@@ -46,7 +46,7 @@ variable "public_key_path" {
 }
 
 variable "cloud_config_master" {
-  default = "../cloud-config-master.yml"
+  default = "../../_tmp/nomad/cloud-config-master.yml"
 }
 
 variable "cloud_config_agent" {
@@ -58,8 +58,11 @@ variable "cloud_config_bastion" {
 }
 
 variable "client_id" {}
+
 variable "client_secret" {}
+
 variable "tenant_id" {}
+
 variable "subscription_id" {}
 
 provider "azurerm" {
