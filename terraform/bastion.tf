@@ -9,7 +9,8 @@ resource "azurerm_public_ip" "bastion_public_ip" {
   domain_name_label            = "${azurerm_resource_group.rg.name}-bastion"
 
   tags {
-    app = "mesos-cluster"
+    app  = "mesos-cluster"
+    type = "bastion"
   }
 }
 
@@ -45,7 +46,8 @@ resource "azurerm_network_security_group" "bastion_nsg" {
   }
 
   tags {
-    app = "mesos-cluster"
+    app  = "mesos-cluster"
+    type = "bastion"
   }
 }
 
@@ -64,7 +66,8 @@ resource "azurerm_network_interface" "bastion_nic" {
   }
 
   tags {
-    app = "mesos-cluster"
+    app  = "mesos-cluster"
+    type = "bastion"
   }
 }
 
@@ -107,6 +110,7 @@ resource "azurerm_virtual_machine" "bastion" {
   }
 
   tags {
-    app = "mesos-cluster"
+    app  = "mesos-cluster"
+    type = "bastion"
   }
 }
