@@ -75,8 +75,31 @@ nomad-init:
 	cd $(NOMAD_TFDIR) && terraform init \
 		$(TERRAFORM_FLAGS)
 
+TMPDIR:=$(CURDIR)/_tmp
+NOMAD_TMPDIR=$(TMPDIR)/nomad
+
+CONSUL_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/consul keygen)
+NOMAD_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/nomad operator keygen)
+.PHONY: nomad-config
+nomad-config: $(NOMAD_TMPDIR) $(NOMAD_TMPDIR)/cloud-config-bastion.yml $(NOMAD_TMPDIR)/cloud-config-master.yml $(NOMAD_TMPDIR)/cloud-config-agent.ym
+
+$(NOMAD_TMPDIR):
+	mkdir -p $(NOMAD_TMPDIR)
+
+$(NOMAD_TMPDIR)/cloud-config-bastion.yml:
+	sed "s/CONSUL_GOSSIP_ENCRYPTION_SECRET/$(CONSUL_GOSSIP_ENCRYPTION_SECRET)/" $(CURDIR)/nomad/cloud-config-bastion.yml > $@
+	sed -i "s/NOMAD_GOSSIP_ENCRYPTION_SECRET/$(NOMAD_GOSSIP_ENCRYPTION_SECRET)/" $@
+
+$(NOMAD_TMPDIR)/cloud-config-master.yml:
+	sed "s/CONSUL_GOSSIP_ENCRYPTION_SECRET/$(CONSUL_GOSSIP_ENCRYPTION_SECRET)/" $(CURDIR)/nomad/cloud-config-master.yml > $@
+	sed -i "s/NOMAD_GOSSIP_ENCRYPTION_SECRET/$(NOMAD_GOSSIP_ENCRYPTION_SECRET)/" $@
+
+$(NOMAD_TMPDIR)/cloud-config-agent.yml:
+	sed "s/CONSUL_GOSSIP_ENCRYPTION_SECRET/$(CONSUL_GOSSIP_ENCRYPTION_SECRET)/" $(CURDIR)/nomad/cloud-config-agent.yml > $@
+	sed -i "s/NOMAD_GOSSIP_ENCRYPTION_SECRET/$(NOMAD_GOSSIP_ENCRYPTION_SECRET)/" $@
+
 .PHONY: nomad-apply
-nomad-apply: nomad-init ## Run terraform apply for nomad.
+nomad-apply: clean nomad-init nomad-config ## Run terraform apply for nomad.
 	cd $(NOMAD_TFDIR) && terraform apply \
 		$(TERRAFORM_FLAGS)
 
@@ -84,8 +107,6 @@ nomad-apply: nomad-init ## Run terraform apply for nomad.
 nomad-destroy: nomad-init ## Run terraform destroy for nomad.
 	cd $(NOMAD_TFDIR) && terraform destroy \
 		$(TERRAFORM_FLAGS)
-
-TMPDIR:=$(CURDIR)/_tmp
 
 .PHONY: update
 update: update-terraform ## Run all update targets.
@@ -100,6 +121,10 @@ update-terraform: ## Update terraform binary locally from the docker container.
 	sudo chmod +x $(TERRAFORM_BINARY)
 	@echo "Update terraform binary: $(TERRAFORM_BINARY)"
 	@terraform version
+
+.PHONY: clean
+clean: ## Cleans up any unneeded files.
+	$(RM) -r $(TMPDIR)
 
 .PHONY: help
 help:

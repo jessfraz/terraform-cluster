@@ -39,6 +39,7 @@ coreos:
           -bootstrap-expect 4 \
           -data-dir /opt/consul \
           -config-dir /etc/consul.d \
+          -encrypt "CONSUL_GOSSIP_ENCRYPTION_SECRET" \
           -advertise $private_ipv4"
       ExecStop=/usr/bin/docker stop consul
 
@@ -124,6 +125,8 @@ write_files:
     server {
       enabled          = true
       bootstrap_expect = 4
+
+      encrypt = "NOMAD_GOSSIP_ENCRYPTION_SECRET"
     }
 - path: "/etc/consul/join.sh"
   permissions: "0744"
