@@ -106,6 +106,7 @@ write_files:
 
     consul(){
       sudo docker run --rm -it --net host \
+        -e CONSUL_HTTP_ADDR=https://127.0.0.1:8501 \
         -e CONSUL_CACERT=/etc/consul/certs/ca.pem \
         -e CONSUL_CLIENT_CERT=/etc/consul/certs/cli.pem \
         -e CONSUL_CLIENT_KEY=/etc/consul/certs/cli-key.pem \
