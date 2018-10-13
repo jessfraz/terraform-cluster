@@ -1,10 +1,13 @@
-# azure-terraform-mesos
+# azure-terraform-cluster
 
-Scripts to create a minimal mesos cluster on Azure using terraform.
+Scripts to create a minimal mesos or nomad cluster on Azure using terraform.
 
 **Table of Contents**
 
+
 * [Overview](README.md#overview)
+   * [Mesos](README.md#mesos)
+   * [Nomad](README.md#nomad)
 * [Using the Makefile](README.md#using-the-makefile)
    * [Spinning up a cluster](README.md#spinning-up-a-cluster)
 * [Azure credentials setup](README.md#azure-credentials-setup)
@@ -12,7 +15,7 @@ Scripts to create a minimal mesos cluster on Azure using terraform.
 
 ## Overview
 
-This creates `3` master and `${variable}` agents in a mesos cluster.
+This creates `3` master and `${variable}` agents in a mesos or nomad cluster.
 
 It also creates a "jumpbox" or ["bastion host"](https://en.wikipedia.org/wiki/Bastion_host)
 since all the masters and agents are not publicly accessible.
@@ -22,6 +25,8 @@ is [CoreOS Container Linux](https://coreos.com/os/docs/latest/).
 
 The cloud-config.yml files defines the servers running on each of the hosts.
 The hosts are designed to be super minimal.
+
+### Mesos
 
 On the **bastion server** we run:
 
@@ -37,6 +42,20 @@ On the **agents** we run:
 
 - Mesos Agent
 
+### Nomad
+
+On the **bastion server** we run:
+
+- _nothing_
+
+On the **masters** we run:
+
+- Consul
+- Nomad Server
+
+On the **agents** we run:
+
+- Nomad Agent
 
 ## Using the `Makefile`
 
@@ -52,8 +71,10 @@ these values.
 
 ```console
 $ make help
-az-apply                       Run terraform apply for Azure.
-az-destroy                     Run terraform destroy for Azure.
+mesos-apply                    Run terraform apply for mesos.
+mesos-destroy                  Run terraform destroy for mesos.
+nomad-apply                    Run terraform apply for nomad.
+nomad-destroy                  Run terraform destroy for nomad.
 shellcheck                     Run shellcheck on all scripts in the repository.
 test                           Runs all the tests.
 update-terraform               Update terraform binary locally from the docker container.

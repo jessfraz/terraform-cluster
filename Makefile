@@ -33,14 +33,14 @@ shellcheck: ## Run shellcheck on all scripts in the repository.
 		--workdir /usr/src \
 		r.j3ss.co/shellcheck ./test.sh
 
-AZURE_TFDIR=$(CURDIR)/terraform
-.PHONY: az-init
-az-init:
+MESOS_TFDIR=$(CURDIR)/mesos/terraform
+.PHONY: mesos-init
+mesos-init:
 	@:$(call check_defined, CLIENT_ID, Azure Client ID)
 	@:$(call check_defined, CLIENT_SECRET, Azure Client Secret)
 	@:$(call check_defined, TENANT_ID, Azure Tenant ID)
 	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
-	@cd $(AZURE_TFDIR) && terraform init \
+	@cd $(MESOS_TFDIR) && terraform init \
 		-var "client_id=$(CLIENT_ID)"  \
 		-var "client_secret=$(CLIENT_SECRET)"  \
 		-var "tenant_id=$(TENANT_ID)"  \
@@ -48,9 +48,9 @@ az-init:
 		-var "prefix=$(PREFIX)" \
 		-var "location=$(LOCATION)"
 
-.PHONY: az-apply
-az-apply: az-init ## Run terraform apply for Azure.
-	@cd $(AZURE_TFDIR) && terraform apply \
+.PHONY: mesos-apply
+mesos-apply: az-init ## Run terraform apply for mesos.
+	@cd $(MESOS_TFDIR) && terraform apply \
 		-var "client_id=$(CLIENT_ID)"  \
 		-var "client_secret=$(CLIENT_SECRET)"  \
 		-var "tenant_id=$(TENANT_ID)"  \
@@ -58,9 +58,44 @@ az-apply: az-init ## Run terraform apply for Azure.
 		-var "prefix=$(PREFIX)" \
 		-var "location=$(LOCATION)"
 
-.PHONY: az-destroy
-az-destroy: az-init ## Run terraform destroy for Azure.
-	@cd $(AZURE_TFDIR) && terraform destroy \
+.PHONY: mesos-destroy
+mesos-destroy: az-init ## Run terraform destroy for mesos.
+	@cd $(MESOS_TFDIR) && terraform destroy \
+		-var "client_id=$(CLIENT_ID)"  \
+		-var "client_secret=$(CLIENT_SECRET)"  \
+		-var "tenant_id=$(TENANT_ID)"  \
+		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
+		-var "prefix=$(PREFIX)" \
+		-var "location=$(LOCATION)"
+
+NOMAD_TFDIR=$(CURDIR)/nomad/terraform
+.PHONY: nomad-init
+nomad-init:
+	@:$(call check_defined, CLIENT_ID, Azure Client ID)
+	@:$(call check_defined, CLIENT_SECRET, Azure Client Secret)
+	@:$(call check_defined, TENANT_ID, Azure Tenant ID)
+	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
+	@cd $(NOMAD_TFDIR) && terraform init \
+		-var "client_id=$(CLIENT_ID)"  \
+		-var "client_secret=$(CLIENT_SECRET)"  \
+		-var "tenant_id=$(TENANT_ID)"  \
+		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
+		-var "prefix=$(PREFIX)" \
+		-var "location=$(LOCATION)"
+
+.PHONY: nomad-apply
+nomad-apply: nomad-init ## Run terraform apply for nomad.
+	@cd $(NOMAD_TFDIR) && terraform apply \
+		-var "client_id=$(CLIENT_ID)"  \
+		-var "client_secret=$(CLIENT_SECRET)"  \
+		-var "tenant_id=$(TENANT_ID)"  \
+		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
+		-var "prefix=$(PREFIX)" \
+		-var "location=$(LOCATION)"
+
+.PHONY: nomad-destroy
+nomad-destroy: nomad-init ## Run terraform destroy for nomad.
+	@cd $(NOMAD_TFDIR) && terraform destroy \
 		-var "client_id=$(CLIENT_ID)"  \
 		-var "client_secret=$(CLIENT_SECRET)"  \
 		-var "tenant_id=$(TENANT_ID)"  \
