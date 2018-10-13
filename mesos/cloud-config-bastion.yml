@@ -15,7 +15,6 @@ coreos:
     content: |-
       [Unit]
       Description=Marathon
-      After=mesos-master.service
       Requires=docker.service
 
       [Service]
