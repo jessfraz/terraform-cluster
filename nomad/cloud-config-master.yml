@@ -27,13 +27,15 @@ coreos:
       ExecStartPre=-/usr/bin/docker rm -f consul
       ExecStartPre=-/usr/bin/docker pull r.j3ss.co/consul:latest
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
-        --restart=always \
         -e SERVICE_IGNORE=true \
         --net=host \
         --volume /opt/consul:/data \
         --name=consul \
         r.j3ss.co/consul:latest \
-          -bootstrap-expect 3 \
+          agent \
+          -server \
+          -bootstrap-expect 2 \
+          -data-dir /data \
           -advertise $private_ipv4"
       ExecStop=/usr/bin/docker stop consul
 
@@ -71,7 +73,6 @@ coreos:
       ExecStartPre=-/usr/bin/docker rm -f nomad
       ExecStartPre=-/usr/bin/docker pull r.j3ss.co/nomad:latest
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
-        --restart=always \
         -e SERVICE_IGNORE=true \
         --net=host \
         --volume /etc/nomad.d:/etc/nomad.d \
@@ -91,5 +92,5 @@ coreos:
 
       server {
         enabled          = true
-        bootstrap_expect = 3
+        bootstrap_expect = 2
       }

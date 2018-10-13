@@ -31,7 +31,6 @@ coreos:
       ExecStartPre=-/usr/bin/docker rm -f mesos-agent
       ExecStartPre=-/usr/bin/docker pull mesosphere/mesos-agent:1.7.0
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
-          --restart=always \
           --name=mesos-agent \
           --net=host \
           --privileged \
