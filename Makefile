@@ -111,12 +111,12 @@ consul-certs:
 	# generate a certificate for all the Consul servers in a specific region (global)
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
 		-ca=consul-ca.pem -ca-key=consul-ca-key.pem -config=cfssl.json \
-		-hostname="server.node.global.consul,localhost,127.0.0.1" - | \
+		-hostname="server.global.consul,localhost,127.0.0.1" - | \
 		$(CFSSLJSON_CMD) -bare server
 	# generate a certificate for all the Consul clients in a specific region (global)
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
 		-ca=consul-ca.pem -ca-key=consul-ca-key.pem -config=cfssl.json \
-		-hostname="client.node.global.consul,localhost,127.0.0.1" - | \
+		-hostname="client.global.consul,localhost,127.0.0.1" - | \
 		$(CFSSLJSON_CMD) -bare server
 	# generate a certificate for the cli
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
