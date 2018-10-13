@@ -81,7 +81,7 @@ NOMAD_TMPDIR=$(TMPDIR)/nomad
 CONSUL_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/consul keygen)
 NOMAD_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/nomad operator keygen)
 .PHONY: nomad-config
-nomad-config: clean $(NOMAD_TMPDIR) $(NOMAD_TMPDIR)/cloud-config-master.yml $(NOMAD_TMPDIR)/cloud-config-agent.yml
+nomad-config: clean $(NOMAD_TMPDIR) $(NOMAD_TMPDIR)/cloud-config-master.yml $(NOMAD_TMPDIR)/cloud-config-agent.yml $(NOMAD_TMPDIR)/cloud-config-bastion.yml
 
 $(NOMAD_TMPDIR):
 	mkdir -p $(NOMAD_TMPDIR)
@@ -92,6 +92,10 @@ $(NOMAD_TMPDIR)/cloud-config-master.yml:
 
 $(NOMAD_TMPDIR)/cloud-config-agent.yml:
 	sed "s#CONSUL_GOSSIP_ENCRYPTION_SECRET#$(CONSUL_GOSSIP_ENCRYPTION_SECRET)#g" $(CURDIR)/nomad/cloud-config-agent.yml > $@
+	sed -i "s#NOMAD_GOSSIP_ENCRYPTION_SECRET#$(NOMAD_GOSSIP_ENCRYPTION_SECRET)#g" $@
+
+$(NOMAD_TMPDIR)/cloud-config-bastion.yml:
+	sed "s#CONSUL_GOSSIP_ENCRYPTION_SECRET#$(CONSUL_GOSSIP_ENCRYPTION_SECRET)#g" $(CURDIR)/nomad/cloud-config-bastion.yml > $@
 	sed -i "s#NOMAD_GOSSIP_ENCRYPTION_SECRET#$(NOMAD_GOSSIP_ENCRYPTION_SECRET)#g" $@
 
 CERTDIR=$(CURDIR)/nomad/certs
@@ -126,6 +130,8 @@ consul-config: consul-certs
 		>> $(NOMAD_TMPDIR)/cloud-config-master.yml
 	@echo '- path: "/etc/consul/certs/ca.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/consul-ca.pem)' \
 		>> $(NOMAD_TMPDIR)/cloud-config-agent.yml
+	@echo '- path: "/etc/consul/certs/ca.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/consul-ca.pem)' \
+		>> $(NOMAD_TMPDIR)/cloud-config-bastion.yml
 	@echo '- path: "/etc/consul/certs/server-key.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "gzip+base64"\n  content: |\n    $(shell sudo gzip -c $(CERTDIR)/server-key.pem | base64 -w0)' \
 		>> $(NOMAD_TMPDIR)/cloud-config-master.yml
 	@echo '- path: "/etc/consul/certs/server.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/server.pem)' \
@@ -134,6 +140,14 @@ consul-config: consul-certs
 		>> $(NOMAD_TMPDIR)/cloud-config-master.yml
 	@echo '- path: "/etc/consul/certs/cli.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/cli.pem)' \
 		>> $(NOMAD_TMPDIR)/cloud-config-master.yml
+	@echo '- path: "/etc/consul/certs/cli-key.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "gzip+base64"\n  content: |\n    $(shell sudo gzip -c $(CERTDIR)/cli-key.pem | base64 -w0)' \
+		>> $(NOMAD_TMPDIR)/cloud-config-agent.yml
+	@echo '- path: "/etc/consul/certs/cli.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/cli.pem)' \
+		>> $(NOMAD_TMPDIR)/cloud-config-agent.yml
+	@echo '- path: "/etc/consul/certs/cli-key.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "gzip+base64"\n  content: |\n    $(shell sudo gzip -c $(CERTDIR)/cli-key.pem | base64 -w0)' \
+		>> $(NOMAD_TMPDIR)/cloud-config-bastion.yml
+	@echo '- path: "/etc/consul/certs/cli.pem"\n  permissions: "0644"\n  owner: "root"\n  encoding: "base64"\n  content: |\n    $(shell base64 -w0 $(CERTDIR)/cli.pem)' \
+		>> $(NOMAD_TMPDIR)/cloud-config-bastion.yml
 
 .PHONY: nomad-apply
 nomad-apply: nomad-init nomad-config consul-config ## Run terraform apply for nomad.
