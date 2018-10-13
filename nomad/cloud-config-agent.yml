@@ -63,7 +63,13 @@ write_files:
     fi
 
     consul(){
-      sudo docker run --rm -it --net host r.j3ss.co/consul $@
+      sudo docker run --rm -it --net host \
+        -e CONSUL_HTTP_ADDR=https://172.18.4.5:9090 \
+        -e CONSUL_CACERT=/etc/consul/certs/ca.pem \
+        -e CONSUL_CLIENT_CERT=/etc/consul/certs/cli.pem \
+        -e CONSUL_CLIENT_KEY=/etc/consul/certs/cli-key.pem \
+        -v /etc/consul/certs:/etc/consul/certs:ro \
+        r.j3ss.co/consul $@
     }
 
     nomad(){
