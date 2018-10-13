@@ -27,8 +27,13 @@ coreos:
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
         -e SERVICE_IGNORE=true \
         --net=host \
+        --privileged \
+        -v /sys/fs/cgroup:/sys/fs/cgroup \
+        -v /tmp:/tmp \
+        -v /run:/run \
+        -v /usr/bin/docker:/usr/bin/docker:ro \
+        -v /var/run/docker.sock:/var/run/docker.sock \
         --volume /etc/nomad.d:/etc/nomad.d \
-				--volume /var/run/docker.sock:/var/run/docker.sock \
         --name=nomad \
         r.j3ss.co/nomad:latest \
           agent -config=/etc/nomad.d/client.hcl"
