@@ -15,12 +15,22 @@ Scripts to create a minimal mesos or nomad cluster on Azure using terraform.
 
 ## Overview
 
-This creates `3` master and `10` agents in a mesos or nomad cluster.
+This creates `5` master and `10` agents in a mesos or nomad cluster.
 You can change the number of masters with `MASTER_COUNT` and the number of
 agents with `AGENT_COUNT`.
 
 It also creates a "jumpbox" or ["bastion host"](https://en.wikipedia.org/wiki/Bastion_host)
 since all the masters and agents are not publicly accessible.
+
+All internal IPs are in the block 172.18.4.x.
+
+So the first 5 in the block are the masters: `172.18.4.5-9`. And the agents
+follow after starting at `172.18.4.10`.
+
+If you want to ssh into the internal nodes you must first go through the
+bastion on node.
+
+The username on the nodes is `vmuser`.
 
 The base image for all the virtual machines 
 is [CoreOS Container Linux](https://coreos.com/os/docs/latest/).
