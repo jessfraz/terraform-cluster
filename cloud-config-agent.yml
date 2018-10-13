@@ -9,6 +9,12 @@ coreos:
     listen_client_urls:          "http://0.0.0.0:2379"
     listen_peer_urls:            "http://$private_ipv4:2380"
   units:
+  - name: mesos_executors.slice
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      Description=Mesos Executors Slice
   - name: mesos-agent.service
     command: start
     enable: true
@@ -16,7 +22,7 @@ coreos:
       [Unit]
       Description=Mesos Agent
       After=mesos-master.service
-      Requires=docker.service
+      Requires=docker.service mesos_executors.slice
 
       [Service]
       Restart=on-failure
@@ -28,7 +34,9 @@ coreos:
           --name=mesos-agent \
           --net=host \
           --privileged \
-          -v /sys:/sys \
+          -v /sys/fs/cgroup:/sys/fs/cgroup \
+          -v /tmp:/tmp \
+          -v /run:/run \
           -v /usr/bin/docker:/usr/bin/docker:ro \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -p 5051:5051 \

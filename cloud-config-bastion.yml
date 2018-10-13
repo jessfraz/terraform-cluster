@@ -32,8 +32,7 @@ coreos:
           mesosphere/marathon:v1.5.11 \
           --master zk://172.18.4.5:2181,172.18.4.6:2181,172.18.4.7:2181/mesos \
           --zk zk://172.18.4.5:2181,172.18.4.6:2181,172.18.4.7:2181/marathon \
-          --checkpoint \
-          --hostname $(ifconfig eth1 | grep 'inet ' | cut -d: -f2 | awk '{ print $2}')"
+          --checkpoint"
       ExecStop=/usr/bin/docker stop marathon
 
       [Install]
