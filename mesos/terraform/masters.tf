@@ -68,17 +68,6 @@ resource "azurerm_virtual_machine" "master" {
     }
   }
 
-  provisioner "file" {
-    source      = "../zookeeper"
-    destination = "/home/${var.username}/"
-
-    connection {
-      type  = "ssh"
-      user  = "${var.username}"
-      agent = true
-    }
-  }
-
   tags {
     app  = "mesos-cluster"
     type = "master"
