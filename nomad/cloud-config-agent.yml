@@ -104,8 +104,8 @@ write_files:
       rpc  = true
 
       ca_file   = "/etc/nomad/certs/ca.pem"
-      cert_file = "/etc/nomad/certs/server.pem"
-      key_file  = "/etc/nomad/certs/server-key.pem"
+      cert_file = "/etc/nomad/certs/client.pem"
+      key_file  = "/etc/nomad/certs/client-key.pem"
 
       #verify_server_hostname = true
       verify_https_client    = true

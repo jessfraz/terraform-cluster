@@ -33,6 +33,9 @@ NOMAD_CA=$(gzip -c "${CERTDIR}/nomad-ca.pem" | base64 -w0)
 NOMAD_SERVER_KEY=$(sudo gzip -c "${CERTDIR}/nomad-server-key.pem" | base64 -w0)
 NOMAD_SERVER_CERT=$(gzip -c "${CERTDIR}/nomad-server.pem" | base64 -w0)
 
+NOMAD_CLIENT_KEY=$(sudo gzip -c "${CERTDIR}/nomad-client-key.pem" | base64 -w0)
+NOMAD_CLIENT_CERT=$(gzip -c "${CERTDIR}/nomad-client.pem" | base64 -w0)
+
 NOMAD_CLI_KEY=$(sudo gzip -c "${CERTDIR}/nomad-cli-key.pem" | base64 -w0)
 NOMAD_CLI_CERT=$(gzip -c "${CERTDIR}/nomad-cli.pem" | base64 -w0)
 
@@ -183,11 +186,11 @@ cat <<-EOF >> "${NOMAD_TMPDIR}/cloud-config-agent.yml"
   owner: "root"
   encoding: "gzip+base64"
   content: |
-    ${NOMAD_SERVER_KEY}
+    ${NOMAD_CLIENT_KEY}
 - path: "/etc/nomad/certs/server.pem"
   permissions: "0644"
   owner: "root"
   encoding: "gzip+base64"
   content: |
-    ${NOMAD_SERVER_CERT}
+    ${NOMAD_CLIENT_CERT}
 EOF
