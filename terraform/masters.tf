@@ -1,7 +1,7 @@
 resource "azurerm_network_interface" "master-nic" {
   count = 3
 
-  name                = "${azurerm_resource_group.rg.name}-nic${count.index}"
+  name                = "${azurerm_resource_group.rg.name}-master-nic${count.index}"
   location            = "${azurerm_resource_group.rg.location}"
   resource_group_name = "${azurerm_resource_group.rg.name}"
 

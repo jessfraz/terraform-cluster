@@ -1,14 +1,15 @@
 resource "azurerm_network_interface" "agent-nic" {
-  count = 25
+  count = 10
 
-  name                = "${azurerm_resource_group.rg.name}-nic${count.index}"
+  name                = "${azurerm_resource_group.rg.name}-agent-nic${count.index}"
   location            = "${azurerm_resource_group.rg.location}"
   resource_group_name = "${azurerm_resource_group.rg.name}"
 
   ip_configuration {
     name                          = "${azurerm_resource_group.rg.name}-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
-    private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "172.18.4.${count.index+8}"
   }
 
   tags {
@@ -21,7 +22,7 @@ resource "azurerm_network_interface" "agent-nic" {
 # Agent VM
 ######################
 resource "azurerm_virtual_machine" "agent" {
-  count = 25
+  count = 10
 
   name                  = "${azurerm_resource_group.rg.name}-agent${count.index}"
   location              = "${azurerm_resource_group.rg.location}"
