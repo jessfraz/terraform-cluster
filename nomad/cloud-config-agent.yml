@@ -74,6 +74,9 @@ write_files:
 
     nomad(){
       sudo docker run --rm -it --net host \
+        -e NOMAD_ADDR=https://127.0.0.1:4646 \
+        -e NOMAD_CACERT=/etc/nomad/certs/ca.pem \
+        -v /etc/nomad/certs:/etc/nomad/certs:ro \
         -v $(pwd):/usr/src \
         --workdir /usr/src \
         r.j3ss.co/nomad $@
