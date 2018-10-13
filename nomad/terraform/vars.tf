@@ -50,7 +50,7 @@ variable "cloud_config_master" {
 }
 
 variable "cloud_config_agent" {
-  default = "../cloud-config-agent.yml"
+  default = "../../_tmp/nomad/cloud-config-agent.yml"
 }
 
 variable "cloud_config_bastion" {

@@ -5,3 +5,7 @@ _tmp
 .terraform/
 terraform.tfstate*
 .terraform.tfstate*
+
+# cert files
+*.pem
+*.csr

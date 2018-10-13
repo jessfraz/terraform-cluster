@@ -1,0 +1,19 @@
+{
+  "CN": "nomad-cluster.io",
+  "hosts": [
+    "nomad-cluster.io",
+    "www.nomad-cluster.io"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "ST": "CA",
+      "L": "San Francisco"
+    }
+  ]
+}
+
