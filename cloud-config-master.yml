@@ -29,6 +29,7 @@ coreos:
       ExecStartPre=-/usr/bin/docker rm -f zookeeper
       ExecStartPre=-/usr/bin/docker pull r.j3ss.co/zookeeper:3.4
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+          --restart=always \
         --net=host \
         --name=zookeeper \
         -v /opt/zookeeper/conf/zoo.cfg:/opt/zookeeper/conf/zoo.cfg \
@@ -54,6 +55,7 @@ coreos:
       ExecStartPre=-/usr/bin/docker rm -f mesos-master
       ExecStartPre=-/usr/bin/docker pull mesosphere/mesos-master:1.7.0
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+          --restart=always \
           --name=mesos-master \
           --net=host \
           -e MESOS_IP=$private_ipv4 \

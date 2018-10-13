@@ -25,6 +25,7 @@ coreos:
       ExecStartPre=-/usr/bin/docker rm -f marathon
       ExecStartPre=-/usr/bin/docker pull mesosphere/marathon:v1.5.11
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+          --restart=always \
           --name marathon \
           -e LIBPROCESS_PORT=9090 \
           -p 80:8080 \
