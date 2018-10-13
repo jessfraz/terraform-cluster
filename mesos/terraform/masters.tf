@@ -34,7 +34,7 @@ resource "azurerm_virtual_machine" "master" {
     type         = "ssh"
     bastion_host = "${azurerm_public_ip.bastion_public_ip.fqdn}"
     bastion_user = "${var.username}"
-    host         = "${element(azurerm_network_interface.master-nic.*.0.private_ip_address, count.index)}"
+    host         = "${element(azurerm_network_interface.master-nic.*.private_ip_addresses, count.index)}"
     user         = "${var.username}"
     agent        = true
   }
