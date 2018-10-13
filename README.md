@@ -12,7 +12,7 @@ Scripts to create a minimal mesos cluster on Azure using terraform.
 
 ## Overview
 
-This creates `3` master and `3` agents in a mesos cluster.
+This creates `3` master and `${variable}` agents in a mesos cluster.
 
 It also creates a "jumpbox" or ["bastion host"](https://en.wikipedia.org/wiki/Bastion_host)
 since all the masters and agents are not publicly accessible.
