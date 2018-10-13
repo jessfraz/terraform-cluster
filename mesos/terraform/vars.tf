@@ -15,6 +15,16 @@ variable "hostname" {
   default     = "vm"
 }
 
+variable "master_count" {
+  description = "Number of master nodes to create."
+  default     = 3
+}
+
+variable "agent_count" {
+  description = "Number of master nodes to create."
+  default     = 15
+}
+
 variable "master_vmsize" {
   description = "Specifies the size of the virtual machine for the masters."
   default     = "Standard_D8_v3"

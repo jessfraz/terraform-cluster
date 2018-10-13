@@ -22,6 +22,9 @@ SUBSCRIPTION_ID := ${AZURE_SUBSCRIPTION_ID}
 PREFIX := jessfraz
 LOCATION := West US 2
 
+MASTER_COUNT := 3
+AGENT_COUNT := 10
+
 .PHONY: test
 test: shellcheck ## Runs all the tests.
 
@@ -46,7 +49,9 @@ mesos-init:
 		-var "tenant_id=$(TENANT_ID)"  \
 		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
 		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)"
+		-var "location=$(LOCATION)" \
+		-var "master_count=$(MASTER_COUNT)" \
+		-var "agent_count="$(AGENT_COUNT)
 
 .PHONY: mesos-apply
 mesos-apply: mesos-init ## Run terraform apply for mesos.
@@ -56,7 +61,9 @@ mesos-apply: mesos-init ## Run terraform apply for mesos.
 		-var "tenant_id=$(TENANT_ID)"  \
 		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
 		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)"
+		-var "location=$(LOCATION)" \
+		-var "master_count=$(MASTER_COUNT)" \
+		-var "agent_count="$(AGENT_COUNT)
 
 .PHONY: mesos-destroy
 mesos-destroy: mesos-init ## Run terraform destroy for mesos.
@@ -66,7 +73,9 @@ mesos-destroy: mesos-init ## Run terraform destroy for mesos.
 		-var "tenant_id=$(TENANT_ID)"  \
 		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
 		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)"
+		-var "location=$(LOCATION)" \
+		-var "master_count=$(MASTER_COUNT)" \
+		-var "agent_count="$(AGENT_COUNT)
 
 NOMAD_TFDIR=$(CURDIR)/nomad/terraform
 .PHONY: nomad-init
@@ -81,7 +90,9 @@ nomad-init:
 		-var "tenant_id=$(TENANT_ID)"  \
 		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
 		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)"
+		-var "location=$(LOCATION)" \
+		-var "master_count=$(MASTER_COUNT)" \
+		-var "agent_count="$(AGENT_COUNT)
 
 .PHONY: nomad-apply
 nomad-apply: nomad-init ## Run terraform apply for nomad.
@@ -91,7 +102,9 @@ nomad-apply: nomad-init ## Run terraform apply for nomad.
 		-var "tenant_id=$(TENANT_ID)"  \
 		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
 		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)"
+		-var "location=$(LOCATION)" \
+		-var "master_count=$(MASTER_COUNT)" \
+		-var "agent_count="$(AGENT_COUNT)
 
 .PHONY: nomad-destroy
 nomad-destroy: nomad-init ## Run terraform destroy for nomad.
@@ -101,7 +114,9 @@ nomad-destroy: nomad-init ## Run terraform destroy for nomad.
 		-var "tenant_id=$(TENANT_ID)"  \
 		-var "subscription_id=$(SUBSCRIPTION_ID)"  \
 		-var "prefix=$(PREFIX)" \
-		-var "location=$(LOCATION)"
+		-var "location=$(LOCATION)" \
+		-var "master_count=$(MASTER_COUNT)" \
+		-var "agent_count="$(AGENT_COUNT)
 
 TMPDIR:=$(CURDIR)/_tmp
 

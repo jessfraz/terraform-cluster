@@ -1,5 +1,5 @@
 resource "azurerm_network_interface" "master-nic" {
-  count = 3
+  count = "${var.master_count}"
 
   name                = "${azurerm_resource_group.rg.name}-master-nic${count.index}"
   location            = "${azurerm_resource_group.rg.location}"
@@ -22,7 +22,7 @@ resource "azurerm_network_interface" "master-nic" {
 # Master VM
 ######################
 resource "azurerm_virtual_machine" "master" {
-  count = 3
+  count = "${var.master_count}"
 
   name                  = "${azurerm_resource_group.rg.name}-master${count.index}"
   location              = "${azurerm_resource_group.rg.location}"
@@ -34,7 +34,7 @@ resource "azurerm_virtual_machine" "master" {
     type         = "ssh"
     bastion_host = "${azurerm_public_ip.bastion_public_ip.fqdn}"
     bastion_user = "${var.username}"
-    host         = "${element(azurerm_network_interface.master-nic.*.private_ip_address, count.index)}"
+    host         = "${element(azurerm_network_interface.master-nic.*.ip_configuration.0.private_ip_addresses, count.index)}"
     user         = "${var.username}"
     agent        = true
   }
