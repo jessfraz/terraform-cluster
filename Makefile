@@ -81,25 +81,25 @@ NOMAD_TMPDIR=$(TMPDIR)/nomad
 CONSUL_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/consul keygen)
 NOMAD_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/nomad operator keygen)
 .PHONY: nomad-config
-nomad-config: $(NOMAD_TMPDIR) $(NOMAD_TMPDIR)/cloud-config-bastion.yml $(NOMAD_TMPDIR)/cloud-config-master.yml $(NOMAD_TMPDIR)/cloud-config-agent.ym
+nomad-config: clean $(NOMAD_TMPDIR) $(NOMAD_TMPDIR)/cloud-config-bastion.yml $(NOMAD_TMPDIR)/cloud-config-master.yml $(NOMAD_TMPDIR)/cloud-config-agent.yml
 
 $(NOMAD_TMPDIR):
 	mkdir -p $(NOMAD_TMPDIR)
 
 $(NOMAD_TMPDIR)/cloud-config-bastion.yml:
-	sed "s/CONSUL_GOSSIP_ENCRYPTION_SECRET/$(CONSUL_GOSSIP_ENCRYPTION_SECRET)/" $(CURDIR)/nomad/cloud-config-bastion.yml > $@
-	sed -i "s/NOMAD_GOSSIP_ENCRYPTION_SECRET/$(NOMAD_GOSSIP_ENCRYPTION_SECRET)/" $@
+	sed "s#CONSUL_GOSSIP_ENCRYPTION_SECRET#$(CONSUL_GOSSIP_ENCRYPTION_SECRET)#g" $(CURDIR)/nomad/cloud-config-bastion.yml > $@
+	sed -i "s#NOMAD_GOSSIP_ENCRYPTION_SECRET#$(NOMAD_GOSSIP_ENCRYPTION_SECRET)#g" $@
 
 $(NOMAD_TMPDIR)/cloud-config-master.yml:
-	sed "s/CONSUL_GOSSIP_ENCRYPTION_SECRET/$(CONSUL_GOSSIP_ENCRYPTION_SECRET)/" $(CURDIR)/nomad/cloud-config-master.yml > $@
-	sed -i "s/NOMAD_GOSSIP_ENCRYPTION_SECRET/$(NOMAD_GOSSIP_ENCRYPTION_SECRET)/" $@
+	sed "s#CONSUL_GOSSIP_ENCRYPTION_SECRET#$(CONSUL_GOSSIP_ENCRYPTION_SECRET)#g" $(CURDIR)/nomad/cloud-config-master.yml > $@
+	sed -i "s#NOMAD_GOSSIP_ENCRYPTION_SECRET#$(NOMAD_GOSSIP_ENCRYPTION_SECRET)#g" $@
 
 $(NOMAD_TMPDIR)/cloud-config-agent.yml:
-	sed "s/CONSUL_GOSSIP_ENCRYPTION_SECRET/$(CONSUL_GOSSIP_ENCRYPTION_SECRET)/" $(CURDIR)/nomad/cloud-config-agent.yml > $@
-	sed -i "s/NOMAD_GOSSIP_ENCRYPTION_SECRET/$(NOMAD_GOSSIP_ENCRYPTION_SECRET)/" $@
+	sed "s#CONSUL_GOSSIP_ENCRYPTION_SECRET#$(CONSUL_GOSSIP_ENCRYPTION_SECRET)#g" $(CURDIR)/nomad/cloud-config-agent.yml > $@
+	sed -i "s#NOMAD_GOSSIP_ENCRYPTION_SECRET#$(NOMAD_GOSSIP_ENCRYPTION_SECRET)#g" $@
 
 .PHONY: nomad-apply
-nomad-apply: clean nomad-init nomad-config ## Run terraform apply for nomad.
+nomad-apply: nomad-init nomad-config ## Run terraform apply for nomad.
 	cd $(NOMAD_TFDIR) && terraform apply \
 		$(TERRAFORM_FLAGS)
 
