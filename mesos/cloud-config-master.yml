@@ -23,7 +23,7 @@ coreos:
       Restart=on-failure
       RestartSec=20
       TimeoutStartSec=0
-      Environment=ZOOKEEPER_HOSTS=172.18.4.5:2888:3888,172.18.4.6:2888:3888,172.18.4.7:2888:3888
+      Environment=ZOOKEEPER_HOSTS=172.18.4.5:2888:3888,172.18.4.6:2888:3888,172.18.4.7:2888:3888,172.18.4.8:2888:3888,172.18.4.9:2888:3888
       Environment=LOCAL_ZK_IP=$private_ipv4
       ExecStartPre=/bin/bash /etc/zookeeper/create_config.sh
       ExecStartPre=-/usr/bin/docker rm -f zookeeper
@@ -59,7 +59,7 @@ coreos:
           -e MESOS_IP=$private_ipv4 \
           -e MESOS_HOSTNAME=$private_ipv4 \
           -e MESOS_CLUSTER=mesos-cluster \
-          -e MESOS_ZK=zk://172.18.4.5:2181,172.18.4.6:2181,172.18.4.7:2181/mesos \
+          -e MESOS_ZK=zk://172.18.4.5:2181,172.18.4.6:2181,172.18.4.7:2181,172.18.4.8:2181,172.18.4.9:2181/mesos \
           -e MESOS_LOG_DIR=/var/log/mesos/master \
           -e MESOS_WORK_DIR=/var/lib/mesos/master \
           -e MESOS_QUORUM=2 \
@@ -68,73 +68,73 @@ coreos:
 
       [Install]
       WantedBy=multi-user.target
-  write_files:
-  - path: "/etc/zookeeper/zoo.cfg"
-    permissions: "0644"
-    owner: "root"
-    content: |
-      # The number of milliseconds of each tick
-      tickTime=2000
-      # The number of ticks that the initial
-      # synchronization phase can take
-      initLimit=90
-      # The number of ticks that can pass between
-      # sending a request and getting an acknowledgement
-      syncLimit=30
-      # the directory where the snapshot is stored.
-      # do not use /tmp for storage, /tmp here is just
-      # example sakes.
-      dataDir=/var/lib/zookeeper
-      # the port at which the clients will connect
-      clientPort=2181
-      # the maximum number of client connections.
-      # increase this if you need to handle more clients
-      #maxClientCnxns=60
-      #
-      # Be sure to read the maintenance section of the
-      # administrator guide before turning on autopurge.
-      #
-      # http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_maintenance
-      #
-      # The number of snapshots to retain in dataDir
-      #autopurge.snapRetainCount=3
-      # Purge task interval in hours
-      # Set to "0" to disable auto purge feature
-      #autopurge.purgeInterval=1
-  - path: "/etc/zookeeper/create_config.sh"
-    permissions: "0744"
-    owner: "root"
-    content: |
-      #!/bin/bash
-      set -e
-      set -o pipefail
-      set -x
+write_files:
+- path: "/etc/zookeeper/zoo.cfg"
+  permissions: "0644"
+  owner: "root"
+  content: |
+    # The number of milliseconds of each tick
+    tickTime=2000
+    # The number of ticks that the initial
+    # synchronization phase can take
+    initLimit=90
+    # The number of ticks that can pass between
+    # sending a request and getting an acknowledgement
+    syncLimit=30
+    # the directory where the snapshot is stored.
+    # do not use /tmp for storage, /tmp here is just
+    # example sakes.
+    dataDir=/var/lib/zookeeper
+    # the port at which the clients will connect
+    clientPort=2181
+    # the maximum number of client connections.
+    # increase this if you need to handle more clients
+    #maxClientCnxns=60
+    #
+    # Be sure to read the maintenance section of the
+    # administrator guide before turning on autopurge.
+    #
+    # http://zookeeper.apache.org/doc/current/zookeeperAdmin.html#sc_maintenance
+    #
+    # The number of snapshots to retain in dataDir
+    #autopurge.snapRetainCount=3
+    # Purge task interval in hours
+    # Set to "0" to disable auto purge feature
+    #autopurge.purgeInterval=1
+- path: "/etc/zookeeper/create_config.sh"
+  permissions: "0744"
+  owner: "root"
+  content: |
+    #!/bin/bash
+    set -e
+    set -o pipefail
+    set -x
 
-      DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
-      # Create a new copy of the file.
-      mkdir -p /opt/zookeeper/conf
-      rm -f /opt/zookeeper/conf/zoo.cfg
-      cp "${DIR}/zoo.cfg" /opt/zookeeper/conf/zoo.cfg
-      sed -i "s/\//" /opt/zookeeper/conf/zoo.cfg
+    # Create a new copy of the file.
+    mkdir -p /opt/zookeeper/conf
+    rm -f /opt/zookeeper/conf/zoo.cfg
+    cp "${DIR}/zoo.cfg" /opt/zookeeper/conf/zoo.cfg
+    sed -i "s/\//" /opt/zookeeper/conf/zoo.cfg
 
-      # Add the hosts.
-      if [ -n "${ZOOKEEPER_HOSTS+1}" ]; then
-        IFS=',' read -r -a zhosts <<< "$ZOOKEEPER_HOSTS"
-        for index in "${!zhosts[@]}"; do
-          echo "server.$((index+1))=${zhosts[index]}"  >> /opt/zookeeper/conf/zoo.cfg
-        done
-      fi
+    # Add the hosts.
+    if [ -n "${ZOOKEEPER_HOSTS+1}" ]; then
+      IFS=',' read -r -a zhosts <<< "$ZOOKEEPER_HOSTS"
+      for index in "${!zhosts[@]}"; do
+        echo "server.$((index+1))=${zhosts[index]}"  >> /opt/zookeeper/conf/zoo.cfg
+      done
+    fi
 
-      # Add the ID.
-      mkdir -p /var/lib/zookeeper
-      if [ -n "${ZOOKEEPER_ID+1}" ]; then
-        echo "$ZOOKEEPER_ID" > /var/lib/zookeeper/myid
-      else
-        for index in "${!zhosts[@]}"; do
-          if [[ "${zhosts[index]}" =~ $LOCAL_ZK_IP ]]; then
-            echo "$((index+1))" > /var/lib/zookeeper/myid
-          fi
-        done
-      fi
-      set +x
+    # Add the ID.
+    mkdir -p /var/lib/zookeeper
+    if [ -n "${ZOOKEEPER_ID+1}" ]; then
+      echo "$ZOOKEEPER_ID" > /var/lib/zookeeper/myid
+    else
+      for index in "${!zhosts[@]}"; do
+        if [[ "${zhosts[index]}" =~ $LOCAL_ZK_IP ]]; then
+          echo "$((index+1))" > /var/lib/zookeeper/myid
+        fi
+      done
+    fi
+    set +x

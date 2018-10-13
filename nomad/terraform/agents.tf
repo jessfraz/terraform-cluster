@@ -9,7 +9,7 @@ resource "azurerm_network_interface" "agent-nic" {
     name                          = "${azurerm_resource_group.rg.name}-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "172.18.4.${count.index+8}"
+    private_ip_address            = "172.18.4.${count.index+5+var.master_count}"
   }
 
   tags {

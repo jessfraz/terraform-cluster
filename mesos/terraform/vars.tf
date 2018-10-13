@@ -17,12 +17,12 @@ variable "hostname" {
 
 variable "master_count" {
   description = "Number of master nodes to create."
-  default     = 3
+  default     = 5
 }
 
 variable "agent_count" {
   description = "Number of master nodes to create."
-  default     = 15
+  default     = 10
 }
 
 variable "master_vmsize" {

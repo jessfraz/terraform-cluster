@@ -35,14 +35,14 @@ coreos:
 
       [Install]
       WantedBy=multi-user.target
-  write_files:
-  - path: "/etc/nomad.d/client.hcl"
-    permissions: "0644"
-    owner: "root"
-    content: |
-      data_dir = "/etc/nomad.d"
+write_files:
+- path: "/etc/nomad.d/client.hcl"
+  permissions: "0644"
+  owner: "root"
+  content: |
+    data_dir = "/etc/nomad.d"
 
-      client {
-        enabled          = true
-        servers = ["172.18.4.5:4647","172.18.4.6:4647","172.18.4.7:4647"]
-      }
+    client {
+      enabled          = true
+      servers = ["172.18.4.5:4647","172.18.4.6:4647","172.18.4.7:4647","172.18.4.8:4647","172.18.4.9:4647"]
+    }

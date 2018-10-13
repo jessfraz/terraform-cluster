@@ -29,13 +29,15 @@ coreos:
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
         -e SERVICE_IGNORE=true \
         --net=host \
-        --volume /opt/consul:/data \
+        --volume /etc/consul.d:/etc/consul.d \
+        --volume /opt/consul:/opt/consul \
         --name=consul \
         r.j3ss.co/consul:latest \
           agent \
           -server \
-          -bootstrap-expect 2 \
-          -data-dir /data \
+          -bootstrap-expect 4 \
+          -data-dir /opt/consul \
+          -config-dir /etc/consul.d \
           -advertise $private_ipv4"
       ExecStop=/usr/bin/docker stop consul
 
@@ -83,14 +85,14 @@ coreos:
 
       [Install]
       WantedBy=multi-user.target
-  write_files:
-  - path: "/etc/nomad.d/server.hcl"
-    permissions: "0644"
-    owner: "root"
-    content: |
-      data_dir = "/etc/nomad.d"
+write_files:
+- path: "/etc/nomad.d/server.hcl"
+  permissions: "0644"
+  owner: "root"
+  content: |
+    data_dir = "/etc/nomad.d"
 
-      server {
-        enabled          = true
-        bootstrap_expect = 2
-      }
+    server {
+      enabled          = true
+      bootstrap_expect = 4
+    }
