@@ -5,7 +5,7 @@ resource "azurerm_virtual_machine" "master0" {
   name                  = "${azurerm_resource_group.rg.name}-master0"
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
-  vm_size               = "${var.vmsize}"
+  vm_size               = "${var.master_vmsize}"
   network_interface_ids = ["${azurerm_network_interface.nic0.id}"]
 
   connection {
@@ -69,7 +69,7 @@ resource "azurerm_virtual_machine" "master1" {
   name                  = "${azurerm_resource_group.rg.name}-master1"
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
-  vm_size               = "${var.vmsize}"
+  vm_size               = "${var.master_vmsize}"
   network_interface_ids = ["${azurerm_network_interface.nic1.id}"]
 
   connection {
@@ -133,7 +133,7 @@ resource "azurerm_virtual_machine" "master2" {
   name                  = "${azurerm_resource_group.rg.name}-master2"
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
-  vm_size               = "${var.vmsize}"
+  vm_size               = "${var.master_vmsize}"
   network_interface_ids = ["${azurerm_network_interface.nic2.id}"]
 
   connection {

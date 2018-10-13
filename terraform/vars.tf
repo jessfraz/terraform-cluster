@@ -15,9 +15,14 @@ variable "hostname" {
   default     = "vm"
 }
 
-variable "vmsize" {
-  description = "Specifies the size of the virtual machine."
-  default     = "Standard_D2_v2"
+variable "master_vmsize" {
+  description = "Specifies the size of the virtual machine for the masters."
+  default     = "Standard_D8_v3"
+}
+
+variable "agent_vmsize" {
+  description = "Specifies the size of the virtual machine for the agents."
+  default     = "Standard_D3_v2"
 }
 
 variable "username" {

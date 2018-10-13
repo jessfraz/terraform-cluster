@@ -1,5 +1,5 @@
 resource "azurerm_network_interface" "agent-nic" {
-  count = 1000
+  count = 50
 
   name                = "${azurerm_resource_group.rg.name}-nic${count.index}"
   location            = "${azurerm_resource_group.rg.location}"
@@ -20,12 +20,12 @@ resource "azurerm_network_interface" "agent-nic" {
 # Agent VM
 ######################
 resource "azurerm_virtual_machine" "agent" {
-  count = 1000
+  count = 50
 
   name                  = "${azurerm_resource_group.rg.name}-agent${count.index}"
   location              = "${azurerm_resource_group.rg.location}"
   resource_group_name   = "${azurerm_resource_group.rg.name}"
-  vm_size               = "${var.vmsize}"
+  vm_size               = "${var.agent_vmsize}"
   network_interface_ids = ["${element(azurerm_network_interface.agent-nic.*.id, count.index)}"]
 
   connection {
