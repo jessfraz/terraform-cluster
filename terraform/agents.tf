@@ -12,7 +12,8 @@ resource "azurerm_network_interface" "agent-nic" {
   }
 
   tags {
-    app = "mesos-cluster"
+    app  = "mesos-cluster"
+    type = "agent"
   }
 }
 
@@ -45,7 +46,7 @@ resource "azurerm_virtual_machine" "agent" {
   }
 
   storage_os_disk {
-    name              = "${var.prefix}-${var.hostname}-osdisk${count.index}"
+    name              = "${var.prefix}-${var.hostname}-agent-osdisk${count.index}"
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
@@ -67,6 +68,7 @@ resource "azurerm_virtual_machine" "agent" {
   }
 
   tags {
-    app = "mesos-cluster"
+    app  = "mesos-cluster"
+    type = "agent"
   }
 }
