@@ -7,7 +7,7 @@ resource "azurerm_network_interface" "agent-nic3" {
 
   ip_configuration {
     name                          = "${azurerm_resource_group.rg.3.name}-ipconfig"
-    subnet_id                     = "${azurerm_subnet.subnet.id}"
+    subnet_id                     = "${azurerm_subnet.subnet.0.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.3.0.${count.index+5+var.master_count}"
   }

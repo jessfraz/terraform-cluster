@@ -7,7 +7,7 @@ resource "azurerm_network_interface" "master-nic2" {
 
   ip_configuration {
     name                          = "${azurerm_resource_group.rg.2.name}-ipconfig"
-    subnet_id                     = "${azurerm_subnet.subnet.id}"
+    subnet_id                     = "${azurerm_subnet.subnet.2.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.2.0.${count.index+5}"
   }

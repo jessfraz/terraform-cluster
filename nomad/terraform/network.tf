@@ -17,7 +17,7 @@ resource "azurerm_subnet" "subnet" {
   name                 = "subnet-${count.index}"
   resource_group_name  = "${element(azurerm_resource_group.rg.*.name, count.index)}"
   virtual_network_name = "${element(azurerm_virtual_network.vnet.*.name, count.index)}"
-  address_prefix       = "${cidrsubnet("${element(azurerm_virtual_network.vnet.*.address_space[count.index], count.index)}", 13, 0)}"
+  address_prefix       = "${element(var.vnet_address_space, count.index)}"
 }
 
 # Enable global peering between the virtual networks.

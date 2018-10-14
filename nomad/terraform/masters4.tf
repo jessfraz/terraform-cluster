@@ -7,7 +7,7 @@ resource "azurerm_network_interface" "master-nic4" {
 
   ip_configuration {
     name                          = "${azurerm_resource_group.rg.4.name}-ipconfig"
-    subnet_id                     = "${azurerm_subnet.subnet.id}"
+    subnet_id                     = "${azurerm_subnet.subnet.4.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.4.0.${count.index+5}"
   }
