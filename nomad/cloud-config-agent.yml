@@ -11,7 +11,6 @@ coreos:
   units:
   units:
   - name: iptables-firewall.service
-    command: start
     content: |
       [Unit]
       Description=Iptables Firewall
@@ -113,11 +112,6 @@ write_files:
     set -o pipefail
     set -x
 
-    # Set default chain policies
-    iptables -P INPUT DROP
-    iptables -P FORWARD DROP
-    iptables -P OUTPUT ACCEPT
-
     # Accept on localhost
     iptables -A INPUT -i lo -m comment --comment "Accept input on localhost" -j ACCEPT
     iptables -A OUTPUT -o lo -m comment --comment "Accept output on localhsot" -j ACCEPT
@@ -146,6 +140,12 @@ write_files:
         iptables -A OUTPUT -d "$cidr" -m comment --comment "Block traffic to nomad cidr $cidr" -j DROP
       done
     fi
+
+    # Set default chain policies
+    iptables -P OUTPUT ACCEPT
+
+    iptables -P INPUT DROP
+    iptables -P FORWARD DROP
 
     set +x
 - path: "/etc/nomad.d/client.hcl"
