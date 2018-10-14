@@ -45,6 +45,10 @@ TERRAFORM_FLAGS = -var "client_id=$(CLIENT_ID)"  \
 		-var "master_count=$(MASTER_COUNT)" \
 		-var "agent_count="$(AGENT_COUNT)
 
+MESOS_TERRAFORM_FLAGS = -v "cloud_config_master=../mesos/cloud-config-master.yml" \
+	-v "cloud_config_bastion=../mesos/cloud-config-bastion.yml" \
+	-v "cloud_config_agent=../mesos/cloud-config-agent.yml"
+
 TERRAFORM_DIR=$(CURDIR)/terraform
 
 .PHONY: mesos-init
@@ -55,18 +59,21 @@ mesos-init:
 	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
 	cd $(TERRAFORM_DIR) && terraform init \
 		-var "orchestrator=mesos" \
+		$(MESOS_TERRAFORM_FLAGS) \
 		$(TERRAFORM_FLAGS)
 
 .PHONY: mesos-apply
 mesos-apply: mesos-init ## Run terraform apply for mesos.
 	cd $(TERRAFORM_DIR) && terraform apply \
 		-var "orchestrator=mesos" \
+		$(MESOS_TERRAFORM_FLAGS) \
 		$(TERRAFORM_FLAGS)
 
 .PHONY: mesos-destroy
 mesos-destroy: mesos-init ## Run terraform destroy for mesos.
 	cd $(TERRAFORM_DIR) && terraform destroy \
 		-var "orchestrator=mesos" \
+		$(MESOS_TERRAFORM_FLAGS) \
 		$(TERRAFORM_FLAGS)
 
 .PHONY: nomad-init

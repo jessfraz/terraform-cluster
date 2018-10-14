@@ -23,7 +23,7 @@ coreos:
       Restart=on-failure
       RestartSec=20
       TimeoutStartSec=0
-      Environment=ZOOKEEPER_HOSTS=172.18.4.5:2888:3888,172.18.4.6:2888:3888,172.18.4.7:2888:3888,172.18.4.8:2888:3888,172.18.4.9:2888:3888
+      Environment=ZOOKEEPER_HOSTS=10.0.0.5:2888:3888,10.0.0.6:2888:3888,10.0.0.7:2888:3888,10.0.0.8:2888:3888,10.0.0.9:2888:3888
       Environment=LOCAL_ZK_IP=$private_ipv4
       ExecStartPre=/bin/bash /etc/zookeeper/create_config.sh
       ExecStartPre=-/usr/bin/docker rm -f zookeeper
@@ -59,7 +59,7 @@ coreos:
           -e MESOS_IP=$private_ipv4 \
           -e MESOS_HOSTNAME=$private_ipv4 \
           -e MESOS_CLUSTER=mesos-cluster \
-          -e MESOS_ZK=zk://172.18.4.5:2181,172.18.4.6:2181,172.18.4.7:2181,172.18.4.8:2181,172.18.4.9:2181/mesos \
+          -e MESOS_ZK=zk://10.0.0.5:2181,10.0.0.6:2181,10.0.0.7:2181,10.0.0.8:2181,10.0.0.9:2181/mesos \
           -e MESOS_LOG_DIR=/var/log/mesos/master \
           -e MESOS_WORK_DIR=/var/lib/mesos/master \
           -e MESOS_QUORUM=2 \
