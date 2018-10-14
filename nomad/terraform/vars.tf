@@ -54,7 +54,7 @@ variable "cloud_config_agent" {
 }
 
 variable "cloud_config_bastion" {
-  default = "../cloud-config-bastion.yml"
+  default = "../../_tmp/nomad/cloud-config-bastion.yml"
 }
 
 variable "client_id" {}
