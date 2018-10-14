@@ -53,6 +53,7 @@ resource "azurerm_virtual_machine" "agent" {
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
+    disk_size_gb      = 500
   }
 
   os_profile {
