@@ -23,7 +23,7 @@ PREFIX := jessfraz
 LOCATION := westus2
 
 MASTER_COUNT := 5
-AGENT_COUNT := 13
+AGENT_COUNT := 18
 
 .PHONY: test
 test: shellcheck ## Runs all the tests.

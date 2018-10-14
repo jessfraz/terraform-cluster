@@ -37,12 +37,12 @@ variable "master_count" {
 
 variable "agent_count" {
   description = "Number of master nodes to create."
-  default     = 10
+  default     = 18
 }
 
 variable "master_vmsize" {
   description = "Specifies the size of the virtual machine for the masters."
-  default     = "Standard_DS4_v2"
+  default     = "Standard_DS3_v2"
 }
 
 variable "agent_vmsize" {
