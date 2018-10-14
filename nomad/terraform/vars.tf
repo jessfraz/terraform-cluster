@@ -30,11 +30,6 @@ variable "rg" {
   default     = "nomad-cluster"
 }
 
-variable "hostname" {
-  description = "Virtual machine name."
-  default     = "vm"
-}
-
 variable "master_count" {
   description = "Number of master nodes to create."
   default     = 5

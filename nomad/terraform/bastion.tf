@@ -81,7 +81,7 @@ resource "azurerm_virtual_machine" "bastion" {
   delete_data_disks_on_termination = true
 
   os_profile {
-    computer_name  = "${var.prefix}-${var.hostname}-bastion"
+    computer_name  = "${azurerm_resource_group.rg.0.name}-bastion"
     admin_username = "${var.username}"
     custom_data    = "${file(var.cloud_config_bastion)}"
   }
@@ -103,7 +103,7 @@ resource "azurerm_virtual_machine" "bastion" {
   }
 
   storage_os_disk {
-    name              = "${var.prefix}-${var.hostname}-bastion-osdisk"
+    name              = "${azurerm_resource_group.rg.0.name}-bastion-osdisk"
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"

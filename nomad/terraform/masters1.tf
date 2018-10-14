@@ -1,15 +1,15 @@
-resource "azurerm_network_interface" "master-nic0" {
+resource "azurerm_network_interface" "master-nic1" {
   count = "${var.master_count}"
 
-  name                = "${azurerm_resource_group.rg.0.name}-master-nic${count.index}"
-  location            = "${azurerm_resource_group.rg.0.location}"
-  resource_group_name = "${azurerm_resource_group.rg.0.name}"
+  name                = "${azurerm_resource_group.rg.1.name}-master-nic${count.index}"
+  location            = "${azurerm_resource_group.rg.1.location}"
+  resource_group_name = "${azurerm_resource_group.rg.1.name}"
 
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.0.name}-ipconfig"
+    name                          = "${azurerm_resource_group.rg.1.name}-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.0.0.${count.index+5}"
+    private_ip_address            = "10.1.0.${count.index+5}"
   }
 
   tags {
@@ -21,20 +21,20 @@ resource "azurerm_network_interface" "master-nic0" {
 ######################
 # Master VM
 ######################
-resource "azurerm_virtual_machine" "master0" {
+resource "azurerm_virtual_machine" "master1" {
   count = "${var.master_count}"
 
-  name                  = "${azurerm_resource_group.rg.0.name}-master${count.index}"
-  location              = "${azurerm_resource_group.rg.0.location}"
-  resource_group_name   = "${azurerm_resource_group.rg.0.name}"
+  name                  = "${azurerm_resource_group.rg.1.name}-master${count.index}"
+  location              = "${azurerm_resource_group.rg.1.location}"
+  resource_group_name   = "${azurerm_resource_group.rg.1.name}"
   vm_size               = "${var.master_vmsize}"
-  network_interface_ids = ["${element(azurerm_network_interface.master-nic0.*.id, count.index)}"]
+  network_interface_ids = ["${element(azurerm_network_interface.master-nic1.*.id, count.index)}"]
 
   connection {
     type         = "ssh"
     bastion_host = "${azurerm_public_ip.bastion_public_ip.fqdn}"
     bastion_user = "${var.username}"
-    host         = "${element(azurerm_network_interface.master-nic0.*.ip_configuration.0.private_ip_addresses, count.index)}"
+    host         = "${element(azurerm_network_interface.master-nic1.*.ip_configuration.0.private_ip_addresses, count.index)}"
     user         = "${var.username}"
     agent        = true
   }
@@ -47,14 +47,14 @@ resource "azurerm_virtual_machine" "master0" {
   }
 
   storage_os_disk {
-    name              = "${azurerm_resource_group.rg.0.name}-master-osdisk${count.index}"
+    name              = "${azurerm_resource_group.rg.1.name}-master-osdisk${count.index}"
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
   }
 
   os_profile {
-    computer_name  = "${azurerm_resource_group.rg.0.name}-master${count.index}"
+    computer_name  = "${azurerm_resource_group.rg.1.name}-master${count.index}"
     admin_username = "${var.username}"
     custom_data    = "${file(var.cloud_config_master)}"
   }
