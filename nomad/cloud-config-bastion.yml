@@ -70,7 +70,7 @@ write_files:
 
     nomad(){
       sudo docker run --rm -it --net host \
-        -e NOMAD_ADDR=http://127.0.0.1:8080 \
+        -e NOMAD_ADDR=https://10.0.0.5:4646 \
         -e NOMAD_CACERT=/etc/nomad/certs/ca.pem \
         -e NOMAD_CLIENT_CERT=/etc/nomad/certs/cli.pem \
         -e NOMAD_CLIENT_KEY=/etc/nomad/certs/cli-key.pem \

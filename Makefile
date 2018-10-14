@@ -111,12 +111,12 @@ consul-certs:
 	# generate a certificate for all the Consul servers in a specific region (global)
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
 		-ca=consul-ca.pem -ca-key=consul-ca-key.pem -config=cfssl.json \
-		-hostname="server.global.consul,localhost,127.0.0.1" - | \
+		-hostname="server.global.consul,localhost,127.0.0.1,10.0.0.5" - | \
 		$(CFSSLJSON_CMD) -bare consul-server
 	# generate a certificate for all the Consul clients in a specific region (global)
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
 		-ca=consul-ca.pem -ca-key=consul-ca-key.pem -config=cfssl.json \
-		-hostname="client.global.consul,localhost,127.0.0.1" - | \
+		-hostname="client.global.consul,localhost,127.0.0.1,10.0.0.5" - | \
 		$(CFSSLJSON_CMD) -bare consul-client
 	# generate a certificate for the cli
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
@@ -130,12 +130,12 @@ nomad-certs:
 	# generate a certificate for all the Nomad servers in a specific region (global)
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
 		-ca=nomad-ca.pem -ca-key=nomad-ca-key.pem -config=cfssl.json \
-		-hostname="server.global.nomad,localhost,127.0.0.1" - | \
+		-hostname="server.global.nomad,localhost,127.0.0.1,10.0.0.5" - | \
 		$(CFSSLJSON_CMD) -bare nomad-server
 	# generate a certificate for all the Nomad clients in a specific region (global)
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
 		-ca=nomad-ca.pem -ca-key=nomad-ca-key.pem -config=cfssl.json \
-		-hostname="client.global.nomad,localhost,127.0.0.1" - | \
+		-hostname="client.global.nomad,localhost,127.0.0.1,10.0.0.5" - | \
 		$(CFSSLJSON_CMD) -bare nomad-client
 	# generate a certificate for the cli
 	echo '{"key":{"algo":"rsa","size":2048}}' | $(CFSSL_CMD) gencert \
