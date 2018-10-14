@@ -2,7 +2,7 @@
 # Bastion Host
 #
 resource "azurerm_public_ip" "bastion_public_ip" {
-  name                         = "${azurerm_resource_group.rg.0.name}-bastion-public_ip"
+  name                         = "bastion-public_ip"
   resource_group_name          = "${azurerm_resource_group.rg.0.name}"
   location                     = "${azurerm_resource_group.rg.0.location}"
   public_ip_address_allocation = "Static"
@@ -11,11 +11,12 @@ resource "azurerm_public_ip" "bastion_public_ip" {
   tags {
     orchestrator = "${var.orchestrator}"
     type         = "bastion"
+    datacenter   = "${azurerm_resource_group.rg.0.location}"
   }
 }
 
 resource "azurerm_network_security_group" "bastion_nsg" {
-  name                = "${azurerm_resource_group.rg.0.name}-bastion-nsg"
+  name                = "bastion-nsg"
   location            = "${azurerm_resource_group.rg.0.location}"
   resource_group_name = "${azurerm_resource_group.rg.0.name}"
 
@@ -48,11 +49,12 @@ resource "azurerm_network_security_group" "bastion_nsg" {
   tags {
     orchestrator = "${var.orchestrator}"
     type         = "bastion"
+    datacenter   = "${azurerm_resource_group.rg.0.location}"
   }
 }
 
 resource "azurerm_network_interface" "bastion_nic" {
-  name                      = "${azurerm_resource_group.rg.0.name}-bastion-nic"
+  name                      = "bastion-nic"
   location                  = "${azurerm_resource_group.rg.0.location}"
   resource_group_name       = "${azurerm_resource_group.rg.0.name}"
   network_security_group_id = "${azurerm_network_security_group.bastion_nsg.id}"
@@ -68,11 +70,12 @@ resource "azurerm_network_interface" "bastion_nic" {
   tags {
     orchestrator = "${var.orchestrator}"
     type         = "bastion"
+    datacenter   = "${azurerm_resource_group.rg.0.location}"
   }
 }
 
 resource "azurerm_virtual_machine" "bastion" {
-  name                             = "${azurerm_resource_group.rg.0.name}-bastion"
+  name                             = "bastion"
   location                         = "${azurerm_resource_group.rg.0.location}"
   resource_group_name              = "${azurerm_resource_group.rg.0.name}"
   vm_size                          = "${var.master_vmsize}"
@@ -124,5 +127,6 @@ resource "azurerm_virtual_machine" "bastion" {
   tags {
     orchestrator = "${var.orchestrator}"
     type         = "bastion"
+    datacenter   = "${azurerm_resource_group.rg.0.location}"
   }
 }

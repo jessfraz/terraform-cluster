@@ -1,7 +1,7 @@
 resource "azurerm_network_interface" "master-nic" {
   count = "${var.master_count * length(var.locations)}"
 
-  name                = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}-master-nic${count.index}"
+  name                = "master-nic${count.index}"
   location            = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.master_count))}"
   resource_group_name = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}"
 
@@ -24,6 +24,7 @@ resource "azurerm_network_interface" "master-nic" {
   tags {
     orchestrator = "${var.orchestrator}"
     type         = "master"
+    datacenter   = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.master_count))}"
   }
 }
 
@@ -33,11 +34,12 @@ resource "azurerm_network_interface" "master-nic" {
 resource "azurerm_virtual_machine" "master" {
   count = "${var.master_count * length(var.locations)}"
 
-  name                             = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}-master${count.index}"
-  location                         = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.master_count))}"
-  resource_group_name              = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}"
-  vm_size                          = "${var.master_vmsize}"
-  network_interface_ids            = ["${element(azurerm_network_interface.master-nic.*.id, count.index)}"]
+  name                  = "master${count.index}"
+  location              = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.master_count))}"
+  resource_group_name   = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}"
+  vm_size               = "${var.master_vmsize}"
+  network_interface_ids = ["${element(azurerm_network_interface.master-nic.*.id, count.index)}"]
+
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
@@ -58,7 +60,7 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_os_disk {
-    name              = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}-master-osdisk${count.index}"
+    name              = "master-osdisk${count.index}"
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
@@ -82,5 +84,6 @@ resource "azurerm_virtual_machine" "master" {
   tags {
     orchestrator = "${var.orchestrator}"
     type         = "master"
+    datacenter   = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.master_count))}"
   }
 }
