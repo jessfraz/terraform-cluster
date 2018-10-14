@@ -81,10 +81,10 @@ resource "azurerm_virtual_machine" "bastion" {
   delete_data_disks_on_termination = true
 
   connection {
-    type         = "ssh"
-    bastion_host = "${azurerm_network_interface.bastion-nic.ip_configuration.0.private_ip_addresses[0]}"
-    bastion_user = "${var.username}"
-    agent        = true
+    type  = "ssh"
+    host  = "${azurerm_public_ip.bastion_public_ip.fqdn}"
+    user  = "${var.username}"
+    agent = true
   }
 
   os_profile {
