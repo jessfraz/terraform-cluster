@@ -58,7 +58,7 @@ resource "azurerm_network_interface" "bastion_nic" {
   network_security_group_id = "${azurerm_network_security_group.bastion_nsg.id}"
 
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.0.name}-bastion-ipconfig"
+    name                          = "ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.0.id}"
     public_ip_address_id          = "${azurerm_public_ip.bastion_public_ip.id}"
     private_ip_address_allocation = "Static"
@@ -82,7 +82,7 @@ resource "azurerm_virtual_machine" "bastion" {
 
   connection {
     type         = "ssh"
-    bastion_host = "${azurerm_public_ip.bastion_public_ip.fqdn}"
+    bastion_host = "${azurerm_network_interface.bastion-nic.ip_configuration.0.private_ip_addresses[0]}"
     bastion_user = "${var.username}"
     agent        = true
   }
