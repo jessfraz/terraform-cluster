@@ -23,6 +23,7 @@ coreos:
       RestartSec=20
       TimeoutStartSec=0
       Environment=NOMAD_HOSTS=10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8,10.0.0.9,10.1.0.5,10.1.0.6,10.1.0.7,10.1.0.8,10.1.0.9,10.2.0.5,10.2.0.6,10.2.0.7,10.2.0.8,10.2.0.9
+      Environment=NOMAD_CIDRS=10.0.0.0/16,10.1.0.0/16,10.2.0.0/16
       ExecStart=/bin/bash /etc/scripts/iptables-firewall.sh
 
 
@@ -131,12 +132,20 @@ write_files:
     if [ -n "${NOMAD_HOSTS+1}" ]; then
       IFS=',' read -r -a nhosts <<< "$NOMAD_HOSTS"
       for host in "${nhosts[@]}"; do
-        iptables -A INPUT -s "$host" -m comment --comment "Allowing incoming connections from nomad master ${host}" -j ACCEPT
+        iptables -A INPUT -s "$host" -m comment --comment "Allowing incoming connections from nomad master $host" -j ACCEPT
       done
     fi
 
-    # Block traffic to cloud metadata
+    # Block outbound traffic to cloud metadata.
     iptables -A OUTPUT -d 169.254.169.254 -m comment --comment "Block traffic to cloud metadata" -j DROP
+
+    # Block all outbount traffic to the other CIDRS in our range.
+    if [ -n "${NOMAD_CIDRS+1}" ]; then
+      IFS=',' read -r -a ncidrs <<< "$NOMAD_CIDRS"
+      for cidr in "${ncidrs[@]}"; do
+        iptables -A OUTPUT -d "$cidr" -m comment --comment "Block traffic to nomad cidr $cidr" -j DROP
+      done
+    fi
 
     set +x
 - path: "/etc/nomad.d/client.hcl"
