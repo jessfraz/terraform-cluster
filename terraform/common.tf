@@ -6,5 +6,6 @@ resource "azurerm_resource_group" "rg" {
 
   tags {
     orchestrator = "${var.orchestrator}"
+    datacenter   = "${element(var.locations, count.index)}"
   }
 }

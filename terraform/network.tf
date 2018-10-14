@@ -8,6 +8,7 @@ resource "azurerm_virtual_network" "vnet" {
 
   tags {
     orchestrator = "${var.orchestrator}"
+    datacenter   = "${element(azurerm_resource_group.rg.*.location, count.index)}"
   }
 }
 
@@ -21,6 +22,8 @@ resource "azurerm_subnet" "subnet" {
 }
 
 # Enable global peering between the virtual networks.
+
+# TODO: generate the below with math.
 
 /*resource "azurerm_virtual_network_peering" "peering" {
   count = "${length(var.locations) * 2}"
