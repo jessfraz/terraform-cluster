@@ -43,8 +43,9 @@ So the first 5 in the block are the masters: `10.x.0.5-9`. And the agents
 follow after starting at `10.x.0.10`.
 
 The IPs get populated programmatically in the terraform files. But they are
-statically added in the `cloud-config*` files. This should be updated
-eventually.
+statically added in the `cloud-config*` files. 
+TODO: This should be updated eventually so the cloud config files are generated 
+with the ips as well.
 
 
 ### Nomad
