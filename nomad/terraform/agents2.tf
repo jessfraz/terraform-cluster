@@ -1,13 +1,13 @@
 resource "azurerm_network_interface" "agent-nic2" {
   count = "${var.agent_count}"
 
-  name                = "${azurerm_resource_group.rg.2.name}-agent-nic${count.index}"
-  location            = "${azurerm_resource_group.rg.2.location}"
-  resource_group_name = "${azurerm_resource_group.rg.2.name}"
+  name                = "${element(azurerm_resource_group.rg.*.name, 2)}-agent-nic${count.index}"
+  location            = "${element(azurerm_resource_group.rg.*.location, 2)}"
+  resource_group_name = "${element(azurerm_resource_group.rg.*.name, 2)}"
 
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.2.name}-ipconfig"
-    subnet_id                     = "${azurerm_subnet.subnet.0.id}"
+    name                          = "${element(azurerm_resource_group.rg.*.name, 2)}-ipconfig"
+    subnet_id                     = "${element(azurerm_subnet.subnet.*.id, 2)}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.2.0.${count.index+5+var.master_count}"
   }
@@ -24,9 +24,9 @@ resource "azurerm_network_interface" "agent-nic2" {
 resource "azurerm_virtual_machine" "agent2" {
   count = "${var.agent_count}"
 
-  name                  = "${azurerm_resource_group.rg.2.name}-agent${count.index}"
-  location              = "${azurerm_resource_group.rg.2.location}"
-  resource_group_name   = "${azurerm_resource_group.rg.2.name}"
+  name                  = "${element(azurerm_resource_group.rg.*.name, 2)}-agent${count.index}"
+  location              = "${element(azurerm_resource_group.rg.*.location, 2)}"
+  resource_group_name   = "${element(azurerm_resource_group.rg.*.name, 2)}"
   vm_size               = "${var.agent_vmsize}"
   network_interface_ids = ["${element(azurerm_network_interface.agent-nic2.*.id, count.index)}"]
 
@@ -47,14 +47,14 @@ resource "azurerm_virtual_machine" "agent2" {
   }
 
   storage_os_disk {
-    name              = "${azurerm_resource_group.rg.2.name}-agent-osdisk${count.index}"
+    name              = "${element(azurerm_resource_group.rg.*.name, 2)}-agent-osdisk${count.index}"
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
   }
 
   os_profile {
-    computer_name  = "${azurerm_resource_group.rg.2.name}-agent${count.index}"
+    computer_name  = "${element(azurerm_resource_group.rg.*.name, 2)}-agent${count.index}"
     admin_username = "${var.username}"
     custom_data    = "${file(var.cloud_config_agent)}"
   }
