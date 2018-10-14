@@ -1,5 +1,5 @@
 resource "azurerm_network_interface" "agent-nic1" {
-  count = "${var.agent_count}"
+  count = "292"
 
   name                = "${element(azurerm_resource_group.rg.*.name, 1)}-agent-nic${count.index}"
   location            = "${element(azurerm_resource_group.rg.*.location, 1)}"
@@ -9,7 +9,7 @@ resource "azurerm_network_interface" "agent-nic1" {
     name                          = "${element(azurerm_resource_group.rg.*.name, 1)}-ipconfig"
     subnet_id                     = "${element(azurerm_subnet.subnet.*.id, 1)}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "${cidrhost(10.1.0.0/16, count.index+5+var.master_count)}"
+    private_ip_address            = "${cidrhost("10.1.0.0/16", count.index+5+var.master_count)}"
   }
 
   tags {
@@ -22,7 +22,7 @@ resource "azurerm_network_interface" "agent-nic1" {
 # Agent VM
 ######################
 resource "azurerm_virtual_machine" "agent1" {
-  count = "${var.agent_count}"
+  count = "292"
 
   name                  = "${element(azurerm_resource_group.rg.*.name, 1)}-agent${count.index}"
   location              = "${element(azurerm_resource_group.rg.*.location, 1)}"
