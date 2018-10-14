@@ -146,11 +146,20 @@ write_files:
       done
     fi
 
+    our_ip=$private_ipv4
+
     # Block all outbound traffic to the other CIDRS in our range.
     if [ -n "${NOMAD_CIDRS+1}" ]; then
       IFS=',' read -r -a ncidrs <<< "$NOMAD_CIDRS"
       for cidr in "${ncidrs[@]}"; do
+
+        # Skip ourself, to test this remove everything after the last .
+        if [[ "$cidr" =~ ${our_ip%.*} ]]; then
+          continue
+        fi
+
         iptables -A OUTPUT -d "$cidr" -m comment --comment "Block traffic to nomad cidr $cidr" -j DROP
+
       done
     fi
 

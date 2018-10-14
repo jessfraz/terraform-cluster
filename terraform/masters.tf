@@ -1,7 +1,7 @@
 resource "azurerm_network_interface" "master-nic" {
   count = "${var.master_count * length(var.locations)}"
 
-  name                = "master-nic${count.index - (floor(count.index / var.master_count)}"
+  name                = "master-nic${count.index - floor(count.index / var.master_count)}"
   location            = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.master_count))}"
   resource_group_name = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}"
 
@@ -34,7 +34,7 @@ resource "azurerm_network_interface" "master-nic" {
 resource "azurerm_virtual_machine" "master" {
   count = "${var.master_count * length(var.locations)}"
 
-  name                  = "master${count.index - (floor(count.index / var.master_count)}"
+  name                  = "master${count.index - floor(count.index / var.master_count)}"
   location              = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.master_count))}"
   resource_group_name   = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}"
   vm_size               = "${var.master_vmsize}"
@@ -60,14 +60,14 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   storage_os_disk {
-    name              = "master-osdisk${count.index - (floor(count.index / var.master_count)}"
+    name              = "master-osdisk${count.index - floor(count.index / var.master_count)}"
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
   }
 
   os_profile {
-    computer_name  = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}-master${count.index - (floor(count.index / var.master_count)}"
+    computer_name  = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}-master${count.index - floor(count.index / var.master_count)}"
     admin_username = "${var.username}"
     custom_data    = "${file(var.cloud_config_master)}"
   }
