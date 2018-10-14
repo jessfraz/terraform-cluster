@@ -59,7 +59,7 @@ write_files:
     fi
 
     consul(){
-      sudo docker run --rm -it --net host \
+      sudo docker run --rm -i --net host \
         -e CONSUL_HTTP_ADDR=https://10.0.0.5:8501 \
         -e CONSUL_CACERT=/etc/consul/certs/ca.pem \
         -e CONSUL_CLIENT_CERT=/etc/consul/certs/cli.pem \
@@ -69,7 +69,7 @@ write_files:
     }
 
     nomad(){
-      sudo docker run --rm -it --net host \
+      sudo docker run --rm -i --net host \
         -e NOMAD_ADDR=https://10.0.0.5:4646 \
         -e NOMAD_CACERT=/etc/nomad/certs/ca.pem \
         -e NOMAD_CLIENT_CERT=/etc/nomad/certs/cli.pem \
