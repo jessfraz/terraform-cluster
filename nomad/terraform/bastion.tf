@@ -80,6 +80,13 @@ resource "azurerm_virtual_machine" "bastion" {
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
+  connection {
+    type         = "ssh"
+    bastion_host = "${azurerm_public_ip.bastion_public_ip.fqdn}"
+    bastion_user = "${var.username}"
+    agent        = true
+  }
+
   os_profile {
     computer_name  = "${azurerm_resource_group.rg.0.name}-bastion"
     admin_username = "${var.username}"
@@ -107,6 +114,11 @@ resource "azurerm_virtual_machine" "bastion" {
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
+  }
+
+  provisioner "file" {
+    source      = "../sleeping-beauty.hcl"
+    destination = "/home/${var.username}/sleeping-beauty.hcl"
   }
 
   tags {

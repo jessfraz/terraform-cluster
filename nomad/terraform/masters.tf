@@ -24,11 +24,13 @@ resource "azurerm_network_interface" "master-nic" {
 resource "azurerm_virtual_machine" "master" {
   count = "${var.master_count * length(var.locations)}"
 
-  name                  = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}-master${count.index}"
-  location              = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.master_count))}"
-  resource_group_name   = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}"
-  vm_size               = "${var.master_vmsize}"
-  network_interface_ids = ["${element(azurerm_network_interface.master-nic.*.id, count.index)}"]
+  name                             = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}-master${count.index}"
+  location                         = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.master_count))}"
+  resource_group_name              = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.master_count))}"
+  vm_size                          = "${var.master_vmsize}"
+  network_interface_ids            = ["${element(azurerm_network_interface.master-nic.*.id, count.index)}"]
+  delete_os_disk_on_termination    = true
+  delete_data_disks_on_termination = true
 
   connection {
     type         = "ssh"
