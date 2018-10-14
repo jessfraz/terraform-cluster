@@ -1,5 +1,5 @@
 resource "azurerm_virtual_network" "vnet" {
-  count = "${length(var.location)}"
+  count = "${length(var.locations)}"
 
   name                = "vnet-${count.index}"
   resource_group_name = "${element(azurerm_resource_group.rg.*.name, count.index)}"
@@ -12,7 +12,7 @@ resource "azurerm_virtual_network" "vnet" {
 }
 
 resource "azurerm_subnet" "subnet" {
-  count = "${length(var.location)}"
+  count = "${length(var.locations)}"
 
   name                 = "subnet-${count.index}"
   resource_group_name  = "${element(azurerm_resource_group.rg.*.name, count.index)}"
@@ -22,7 +22,7 @@ resource "azurerm_subnet" "subnet" {
 
 # Enable global peering between the virtual networks.
 resource "azurerm_virtual_network_peering" "peering" {
-  count = "${length(var.location)}"
+  count = "${length(var.locations)}"
 
   name                         = "peering-to-${element(azurerm_virtual_network.vnet.*.name, 1 - count.index)}"
   resource_group_name          = "${element(azurerm_resource_group.rg.*.name, count.index)}"
