@@ -27,6 +27,7 @@ coreos:
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
         -e SERVICE_IGNORE=true \
         -p 8080:4646 \
+        --hostname bastion \
         -v /etc/nomad/certs:/etc/nomad/certs:ro \
         --volume /etc/nomad.d:/etc/nomad.d \
         --name=nomad \
@@ -87,6 +88,12 @@ write_files:
     client {
       enabled          = true
       servers = ["172.18.4.5:4647","172.18.4.6:4647","172.18.4.7:4647","172.18.4.8:4647","172.18.4.9:4647"]
+
+      reserved {
+        cpu            = 1
+        memory         = 1
+        disk           = 1
+      }
     }
 
     tls {
@@ -99,10 +106,4 @@ write_files:
 
       #verify_server_hostname = true
       #verify_https_client    = true
-
-      reserved {
-        cpu            = 1
-        memory         = 1
-        disk           = 1
-      }
     }

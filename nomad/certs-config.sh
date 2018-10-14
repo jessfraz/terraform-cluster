@@ -77,6 +77,18 @@ cat <<-EOF >> "${NOMAD_TMPDIR}/cloud-config-bastion.yml"
   encoding: "gzip+base64"
   content: |
     ${NOMAD_CLI_CERT}
+- path: "/etc/nomad/certs/client-key.pem"
+  permissions: "0644"
+  owner: "root"
+  encoding: "gzip+base64"
+  content: |
+    ${NOMAD_CLIENT_KEY}
+- path: "/etc/nomad/certs/client.pem"
+  permissions: "0644"
+  owner: "root"
+  encoding: "gzip+base64"
+  content: |
+    ${NOMAD_CLIENT_CERT}
 EOF
 
 # Add the certs to the master config.
