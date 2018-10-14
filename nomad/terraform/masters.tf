@@ -9,7 +9,7 @@ resource "azurerm_network_interface" "master-nic" {
     name                          = "ipconfig"
     subnet_id                     = "${element(azurerm_subnet.subnet.*.id, floor(count.index / var.master_count))}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "${cidrhost("10.0.0.0/16", count.index + 5)}"
+    private_ip_address            = "${cidrhost(format("10.%d.0.0/16", floor(count.index / var.agent_count)), count.index + 5)}"
   }
 
   tags {
