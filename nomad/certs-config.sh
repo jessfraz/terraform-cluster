@@ -181,13 +181,13 @@ cat <<-EOF >> "${NOMAD_TMPDIR}/cloud-config-agent.yml"
   encoding: "gzip+base64"
   content: |
     ${NOMAD_CLI_CERT}
-- path: "/etc/nomad/certs/server-key.pem"
+- path: "/etc/nomad/certs/client-key.pem"
   permissions: "0644"
   owner: "root"
   encoding: "gzip+base64"
   content: |
     ${NOMAD_CLIENT_KEY}
-- path: "/etc/nomad/certs/server.pem"
+- path: "/etc/nomad/certs/client.pem"
   permissions: "0644"
   owner: "root"
   encoding: "gzip+base64"
