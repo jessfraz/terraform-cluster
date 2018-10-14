@@ -160,8 +160,6 @@ write_files:
     # Allow ping to work
     iptables -A INPUT -p icmp -m comment --comment "Allow ping to work as expected" -j ACCEPT
 
-
-
     # Set default chain policies
     iptables -P OUTPUT ACCEPT
     iptables -P INPUT DROP
