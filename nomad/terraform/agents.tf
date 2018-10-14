@@ -1,7 +1,7 @@
 resource "azurerm_network_interface" "agent-nic" {
   count = "${var.agent_count * length(var.locations)}"
 
-  name                = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.agent_count))}-master-nic${count.index}"
+  name                = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.agent_count))}-agent-nic${count.index}"
   location            = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.agent_count))}"
   resource_group_name = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.agent_count))}"
 
