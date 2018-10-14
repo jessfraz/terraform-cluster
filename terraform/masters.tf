@@ -18,7 +18,7 @@ resource "azurerm_network_interface" "master-nic" {
     # 10.1.0.5
     # 10.1.0.6
     # ...
-    private_ip_address = "${cidrhost(format("10.%d.0.0/16", floor(count.index / var.master_count)), count.index - (floor(count.index / var.master_count) * length(var.locations)) + 5)}"
+    private_ip_address = "${cidrhost(format("10.%d.0.0/16", floor(count.index / var.master_count)), count.index - (floor(count.index / var.master_count) * var.master_count) + 5)}"
   }
 
   tags {
