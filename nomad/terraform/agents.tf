@@ -9,7 +9,16 @@ resource "azurerm_network_interface" "agent-nic" {
     name                          = "ipconfig"
     subnet_id                     = "${element(azurerm_subnet.subnet.*.id, floor(count.index / var.agent_count))}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "${cidrhost(format("10.%d.0.0/16", floor(count.index / var.agent_count)), count.index + 5 + var.master_count)}"
+
+    # This expands to 10.0.0.0/16 for the first region and 10.1.0.0/16 for the second region...
+    # And then the IP being accessed is the number of the agent for that location:
+    # 10.0.0.10
+    # 10.0.0.11
+    # ...
+    # 10.1.0.10
+    # 10.1.0.11
+    # ...
+    private_ip_address = "${cidrhost(format("10.%d.0.0/16", floor(count.index / var.agent_count)), floor(count.index / length(var.locations)) + 5 + var.master_count)}"
   }
 
   tags {

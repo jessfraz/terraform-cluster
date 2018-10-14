@@ -9,7 +9,16 @@ resource "azurerm_network_interface" "master-nic" {
     name                          = "ipconfig"
     subnet_id                     = "${element(azurerm_subnet.subnet.*.id, floor(count.index / var.master_count))}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "${cidrhost(format("10.%d.0.0/16", floor(count.index / var.master_count)), count.index + 5)}"
+
+    # This expands to 10.0.0.0/16 for the first region and 10.1.0.0/16 for the second region...
+    # And then the IP being accessed is the number of the master for that location:
+    # 10.0.0.5
+    # 10.0.0.6
+    # ...
+    # 10.1.0.5
+    # 10.1.0.6
+    # ...
+    private_ip_address = "${cidrhost(format("10.%d.0.0/16", floor(count.index / var.master_count)), floor(count.index / length(var.locations)) + 5)}"
   }
 
   tags {
