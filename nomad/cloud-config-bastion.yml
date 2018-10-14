@@ -8,6 +8,34 @@ coreos:
     initial-advertise-peer-urls:  "http://$private_ipv4:2380"
     listen_client_urls:          "http://0.0.0.0:2379"
     listen_peer_urls:            "http://$private_ipv4:2380"
+  units:
+  - name: nomad.service
+    command: start
+    enable: true
+    content: |
+      [Unit]
+      Description=Nomad Agent
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Restart=on-failure
+      RestartSec=20
+      TimeoutStartSec=0
+      ExecStartPre=-/usr/bin/docker rm -f nomad
+      ExecStartPre=-/usr/bin/docker pull r.j3ss.co/nomad:latest
+      ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
+        -e SERVICE_IGNORE=true \
+        -p 8080:4646 \
+        -v /etc/nomad/certs:/etc/nomad/certs:ro \
+        --volume /etc/nomad.d:/etc/nomad.d \
+        --name=nomad \
+        r.j3ss.co/nomad:latest \
+          agent -config=/etc/nomad.d/client.hcl"
+      ExecStop=/usr/bin/docker stop nomad
+
+      [Install]
+      WantedBy=multi-user.target
 write_files:
 - path: "/home/vmuser/.bashrc"
   permissions: "0777"
@@ -49,4 +77,32 @@ write_files:
         -v $(pwd):/usr/src \
         --workdir /usr/src \
         r.j3ss.co/nomad $@
+    }
+- path: "/etc/nomad.d/client.hcl"
+  permissions: "0644"
+  owner: "root"
+  content: |
+    data_dir = "/etc/nomad.d"
+
+    client {
+      enabled          = true
+      servers = ["172.18.4.5:4647","172.18.4.6:4647","172.18.4.7:4647","172.18.4.8:4647","172.18.4.9:4647"]
+    }
+
+    tls {
+      http = false
+      rpc  = true
+
+      ca_file   = "/etc/nomad/certs/ca.pem"
+      cert_file = "/etc/nomad/certs/client.pem"
+      key_file  = "/etc/nomad/certs/client-key.pem"
+
+      #verify_server_hostname = true
+      #verify_https_client    = true
+
+      reserved {
+        cpu            = 1
+        memory         = 1
+        disk           = 1
+      }
     }
