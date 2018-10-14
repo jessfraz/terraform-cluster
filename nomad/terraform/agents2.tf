@@ -9,7 +9,7 @@ resource "azurerm_network_interface" "agent-nic2" {
     name                          = "${element(azurerm_resource_group.rg.*.name, 2)}-ipconfig"
     subnet_id                     = "${element(azurerm_subnet.subnet.*.id, 2)}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "10.2.0.${count.index+5+var.master_count}"
+    private_ip_address            = "${cidrhost(10.2.0.0/16, count.index+5+var.master_count)}"
   }
 
   tags {
