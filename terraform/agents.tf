@@ -1,7 +1,7 @@
 resource "azurerm_network_interface" "agent-nic" {
   count = "${var.agent_count * length(var.locations)}"
 
-  name                = "agent-nic${count.index}"
+  name                = "agent-nic${count.index - (floor(count.index / var.agent_count) * var.agent_count) + var.master_count}"
   location            = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.agent_count))}"
   resource_group_name = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.agent_count))}"
 
@@ -34,7 +34,7 @@ resource "azurerm_network_interface" "agent-nic" {
 resource "azurerm_virtual_machine" "agent" {
   count = "${var.agent_count * length(var.locations)}"
 
-  name                  = "agent${count.index}"
+  name                  = "agent${count.index - (floor(count.index / var.agent_count) * var.agent_count) + var.master_count}"
   location              = "${element(azurerm_resource_group.rg.*.location, floor(count.index / var.agent_count))}"
   resource_group_name   = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.agent_count))}"
   vm_size               = "${var.agent_vmsize}"
@@ -60,7 +60,7 @@ resource "azurerm_virtual_machine" "agent" {
   }
 
   storage_os_disk {
-    name              = "agent-osdisk${count.index}"
+    name              = "agent-osdisk${count.index - (floor(count.index / var.agent_count) * var.agent_count) + var.master_count}"
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
@@ -68,7 +68,7 @@ resource "azurerm_virtual_machine" "agent" {
   }
 
   os_profile {
-    computer_name  = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.agent_count))}-agent${count.index}"
+    computer_name  = "${element(azurerm_resource_group.rg.*.name, floor(count.index / var.agent_count))}-agent${count.index - (floor(count.index / var.agent_count) * var.agent_count) + var.master_count}"
     admin_username = "${var.username}"
     custom_data    = "${file(var.cloud_config_agent)}"
   }
