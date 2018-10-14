@@ -58,7 +58,9 @@ when the cluster is created.
 
 On the **bastion server** we run:
 
-- _nothing_
+- Nomad Dashboard: **This is opened on port 8080 by default so you will want to 
+    change that if you want your cluster to be secure.**
+    This is only done so it is easy to demo.
 
 On the **masters** we run:
 
@@ -73,7 +75,7 @@ On the **agents** we run:
 
 On the **bastion server** we run:
 
-- [Mesos Marathon](https://mesosphere.github.io/marathon/). **This is opened on
+- [Mesos Marathon](https://mesosphere.github.io/marathon/): **This is opened on
     port 8080 by default so you will want to change that if you want your cluster
     to be secure.** This is only done so it is easy to demo.
 
