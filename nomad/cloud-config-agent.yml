@@ -11,7 +11,7 @@ coreos:
   units:
   units:
   - name: iptables-firewall.service
-    enable: false
+    command: start
     content: |
       [Unit]
       Description=Iptables Firewall
@@ -113,13 +113,13 @@ write_files:
     set -x
 
     # Set default chain policies
-    iptables -P INPUT -m comment --comment "Drop all input" DROP
-    iptables -P FORWARD -m comment --comment "Drop all forward" DROP
-    iptables -P OUTPUT -m comment --comment "Accept all output" ACCEPT
+    iptables -P INPUT DROP
+    iptables -P FORWARD DROP
+    iptables -P OUTPUT ACCEPT
 
     # Accept on localhost
-    iptables -A INPUT -i lo -j -m comment --comment "Accept input on localhost" ACCEPT
-    iptables -A OUTPUT -o lo -j -m comment --comment "Accept output on localhsot" ACCEPT
+    iptables -A INPUT -i lo -m comment --comment "Accept input on localhost" -j ACCEPT
+    iptables -A OUTPUT -o lo -m comment --comment "Accept output on localhsot" -j ACCEPT
 
     # Accept ssh
     iptables -I INPUT -p tcp --dport 22 -m comment --comment "Accept ssh" -j ACCEPT
@@ -134,6 +134,11 @@ write_files:
         iptables -A INPUT -s "$host" -m comment --comment "Allowing incoming connections from nomad master ${host}" -j ACCEPT
       done
     fi
+
+    # Block traffic to cloud metadata
+    iptables -A OUTPUT -d 169.254.169.254 -m comment --comment "Block traffic to cloud metadata" -j DROP
+
+    set +x
 - path: "/etc/nomad.d/client.hcl"
   permissions: "0644"
   owner: "root"

@@ -206,3 +206,5 @@ write_files:
           r.j3ss.co/consul:latest join "$host" || true
       done
     fi
+
+    set +x
