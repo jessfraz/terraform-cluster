@@ -42,10 +42,10 @@ resource "azurerm_virtual_machine" "agent" {
   }
 
   storage_image_reference {
-    publisher = "CoreOS"
-    offer     = "CoreOS"
-    sku       = "Stable"
-    version   = "latest"
+    publisher = "${var.image_publisher}"
+    offer     = "${var.image_publisher}"
+    sku       = "${var.image_sku}"
+    version   = "${var.image_version}"
   }
 
   storage_os_disk {

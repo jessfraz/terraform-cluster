@@ -71,6 +71,21 @@ variable "cloud_config_bastion" {
   default = "../../_tmp/nomad/cloud-config-bastion.yml"
 }
 
+variable "image_publisher" {
+  description = "Virtual machine image publisher."
+  default     = "CoreOS"
+}
+
+variable "image_sku" {
+  description = "Virtual machine image sku."
+  default     = "Stable"
+}
+
+variable "image_version" {
+  description = "Virtual machine image version."
+  default     = "latest"
+}
+
 variable "client_id" {}
 
 variable "client_secret" {}
