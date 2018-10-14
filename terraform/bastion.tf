@@ -113,7 +113,7 @@ resource "azurerm_virtual_machine" "bastion" {
   }
 
   storage_os_disk {
-    name              = "${azurerm_resource_group.rg.0.name}-bastion-osdisk"
+    name              = "bastion-osdisk"
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
