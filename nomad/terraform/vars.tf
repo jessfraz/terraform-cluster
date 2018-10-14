@@ -10,8 +10,8 @@ variable "locations" {
     "westus2",
     "eastus",
     "eastus2",
-    "centralus",
-    "northcentralus",
+    "canadacentral",
+    "canadaeast",
   ]
 }
 
@@ -42,12 +42,12 @@ variable "agent_count" {
 
 variable "master_vmsize" {
   description = "Specifies the size of the virtual machine for the masters."
-  default     = "Standard_D8_v3"
+  default     = "Standard_DS4_v2"
 }
 
 variable "agent_vmsize" {
   description = "Specifies the size of the virtual machine for the agents."
-  default     = "Standard_D3_v2"
+  default     = "Standard_DS3_v2"
 }
 
 variable "username" {

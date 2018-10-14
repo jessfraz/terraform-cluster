@@ -15,7 +15,7 @@ job "sleeping-beauty" {
   # placed on the same host.
   group "sb-group" {
     # Specify the number of these tasks we want.
-    count = 100
+    count = 10000
 
     # Create an individual task (unit of work). This particular
     # task utilizes a Docker container to front a web application.
@@ -32,8 +32,8 @@ job "sleeping-beauty" {
       # Specify the maximum resources required to run the task,
       # include CPU, memory, and bandwidth.
       resources {
-        cpu    = 500 # MHz
-        memory = 128 # MB
+        cpu    = 20 # MHz
+        memory = 10 # MB
       }
     }
   }
