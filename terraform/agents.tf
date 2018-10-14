@@ -18,7 +18,7 @@ resource "azurerm_network_interface" "agent-nic" {
     # 10.1.0.10
     # 10.1.0.11
     # ...
-    private_ip_address = "${cidrhost(format("10.%d.0.0/16", floor(count.index / var.agent_count)), floor(count.index / length(var.locations)) + 5 + var.master_count)}"
+    private_ip_address = "${cidrhost(format("10.%d.0.0/16", floor(count.index / var.agent_count)), count.index - (floor(count.index / var.agent_count) * length(var.locations)) + 5 + var.master_count)}"
   }
 
   tags {
