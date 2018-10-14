@@ -19,13 +19,9 @@ coreos:
       Requires=docker.service
 
       [Service]
-      StandardOutput=console
       Restart=on-failure
       RestartSec=20
       TimeoutStartSec=0
-      Environment=ZOOKEEPER_HOSTS=10.0.0.5:2888:3888,10.0.0.6:2888:3888,10.0.0.7:2888:3888,10.0.0.8:2888:3888,10.0.0.9:2888:3888
-      Environment=LOCAL_ZK_IP=$private_ipv4
-      ExecStartPre=/bin/bash /etc/zookeeper/create_config.sh
       ExecStartPre=-/usr/bin/docker rm -f zookeeper
       ExecStartPre=-/usr/bin/docker pull r.j3ss.co/zookeeper:3.4
       ExecStart=/usr/bin/sh -c "/usr/bin/docker run \
@@ -69,7 +65,7 @@ coreos:
       [Install]
       WantedBy=multi-user.target
 write_files:
-- path: "/etc/zookeeper/zoo.cfg"
+- path: "/opt/zookeeper/conf/zoo.cfg"
   permissions: "0644"
   owner: "root"
   content: |
@@ -101,39 +97,12 @@ write_files:
     # Purge task interval in hours
     # Set to "0" to disable auto purge feature
     #autopurge.purgeInterval=1
-- path: "/etc/zookeeper/create_config.sh"
-  permissions: "0744"
+    server.1=10.0.0.5:2888:3888
+    server.2=10.0.0.6:2888:3888
+    server.3=10.0.0.7:2888:3888
+    server.4=10.0.0.8:2888:3888
+    server.5=10.0.0.9:2888:3888
+- path: "/var/lib/zookeeper/myid"
+  permissions: "0644"
   owner: "root"
-  content: |
-    #!/bin/bash
-    set -e
-    set -o pipefail
-    set -x
-
-    DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-
-    # Create a new copy of the file.
-    mkdir -p /opt/zookeeper/conf
-    rm -f /opt/zookeeper/conf/zoo.cfg
-    cp "${DIR}/zoo.cfg" /opt/zookeeper/conf/zoo.cfg
-
-    # Add the hosts.
-    if [ -n "${ZOOKEEPER_HOSTS+1}" ]; then
-      IFS=',' read -r -a zhosts <<< "$ZOOKEEPER_HOSTS"
-      for index in "${!zhosts[@]}"; do
-        echo "server.$((index+1))=${zhosts[index]}"  >> /opt/zookeeper/conf/zoo.cfg
-      done
-    fi
-
-    # Add the ID.
-    mkdir -p /var/lib/zookeeper
-    if [ -n "${ZOOKEEPER_ID+1}" ]; then
-      echo "$ZOOKEEPER_ID" > /var/lib/zookeeper/myid
-    else
-      for index in "${!zhosts[@]}"; do
-        if [[ "${zhosts[index]}" =~ $LOCAL_ZK_IP ]]; then
-          echo "$((index+1))" > /var/lib/zookeeper/myid
-        fi
-      done
-    fi
-    set +x
+  content: $private_ip
