@@ -112,34 +112,48 @@ write_files:
     set -o pipefail
     set -x
 
+    # Allow all established connections
+    iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
+
+    # Drop all invalid packets
+    iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
+
     # Accept on localhost
     iptables -A INPUT -i lo -m comment --comment "Accept input on localhost" -j ACCEPT
     iptables -A OUTPUT -o lo -m comment --comment "Accept output on localhsot" -j ACCEPT
 
     # Accept ssh
-    iptables -I INPUT -p tcp --dport 22 -m comment --comment "Accept ssh" -j ACCEPT
+    iptables -A INPUT -p tcp --dport 22 -m comment --comment "Accept ssh" -j ACCEPT
 
     # Allow ping to work
     iptables -A INPUT -p icmp -m comment --comment "Allow ping to work as expected" -j ACCEPT
 
-    # Add the nomad masters as allowed source IPs.
-    if [ -n "${NOMAD_HOSTS+1}" ]; then
-      IFS=',' read -r -a nhosts <<< "$NOMAD_HOSTS"
-      for host in "${nhosts[@]}"; do
-        iptables -A INPUT -s "$host" -m comment --comment "Allowing incoming connections from nomad master $host" -j ACCEPT
-      done
-    fi
-
     # Block outbound traffic to cloud metadata.
     iptables -A OUTPUT -d 169.254.169.254 -m comment --comment "Block traffic to cloud metadata" -j DROP
 
-    # Block all outbount traffic to the other CIDRS in our range.
+
+    # Block all outbound traffic to the other CIDRS in our range.
     if [ -n "${NOMAD_CIDRS+1}" ]; then
       IFS=',' read -r -a ncidrs <<< "$NOMAD_CIDRS"
       for cidr in "${ncidrs[@]}"; do
         iptables -A OUTPUT -d "$cidr" -m comment --comment "Block traffic to nomad cidr $cidr" -j DROP
       done
     fi
+
+    if [ -n "${NOMAD_HOSTS+1}" ]; then
+      IFS=',' read -r -a nhosts <<< "$NOMAD_HOSTS"
+      for host in "${nhosts[@]}"; do
+        # Add the nomad masters as allowed source IPs.
+        iptables -A INPUT -s "$host" -m comment --comment "Allowing incoming connections from nomad master $host" -j ACCEPT
+
+        # Allow outgoing connections from this IP to the other nomad servers.
+        # Ports come from: https://www.nomadproject.io/docs/configuration/index.html#rpc-2
+        iptables -A OUTPUT -p tcp -s "$private_ip" -d "$host" --dport 4646 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+        iptables -A OUTPUT -p tcp -s "$private_ip" -d "$host" --dport 4647 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+        iptables -A OUTPUT -p tcp -s "$private_ip" -d "$host" --dport 4648 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+      done
+    fi
+
 
     # Set default chain policies
     iptables -P OUTPUT ACCEPT
