@@ -22,8 +22,8 @@ resource "azurerm_network_interface" "master-nic" {
   }
 
   tags {
-    app  = "nomad-cluster"
-    type = "master"
+    orchestrator = "${var.orchestrator}"
+    type         = "master"
   }
 }
 
@@ -80,7 +80,7 @@ resource "azurerm_virtual_machine" "master" {
   }
 
   tags {
-    app  = "nomad-cluster"
-    type = "master"
+    orchestrator = "${var.orchestrator}"
+    type         = "master"
   }
 }

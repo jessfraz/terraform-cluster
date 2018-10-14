@@ -23,7 +23,12 @@ variable "vnet_address_space" {
 
 variable "rg" {
   description = "The name of the resource group in which to create the resources."
-  default     = "nomad-cluster"
+  default     = "cluster"
+}
+
+variable "orchestrator" {
+  description = "The orchestrator for the cluster."
+  default     = "nomad"
 }
 
 variable "master_count" {

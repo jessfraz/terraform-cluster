@@ -22,8 +22,8 @@ resource "azurerm_network_interface" "agent-nic" {
   }
 
   tags {
-    app  = "nomad-cluster"
-    type = "agent"
+    orchestrator = "${var.orchestrator}"
+    type         = "agent"
   }
 }
 
@@ -81,7 +81,7 @@ resource "azurerm_virtual_machine" "agent" {
   }
 
   tags {
-    app  = "nomad-cluster"
-    type = "agent"
+    orchestrator = "${var.orchestrator}"
+    type         = "agent"
   }
 }

@@ -7,7 +7,7 @@ resource "azurerm_virtual_network" "vnet" {
   location            = "${element(azurerm_resource_group.rg.*.location, count.index)}"
 
   tags {
-    app = "nomad-cluster"
+    orchestrator = "${var.orchestrator}"
   }
 }
 

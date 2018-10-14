@@ -66,8 +66,8 @@ resource "azurerm_network_interface" "bastion_nic" {
   }
 
   tags {
-    app  = "nomad-cluster"
-    type = "bastion"
+    orchestrator = "${var.orchestrator}"
+    type         = "bastion"
   }
 }
 
@@ -122,7 +122,7 @@ resource "azurerm_virtual_machine" "bastion" {
   }
 
   tags {
-    app  = "nomad-cluster"
-    type = "bastion"
+    orchestrator = "${var.orchestrator}"
+    type         = "bastion"
   }
 }
