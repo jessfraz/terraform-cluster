@@ -51,6 +51,10 @@ other regions.
 So the first 5 in the block are the masters: `10.x.0.5-9`. And the agents
 follow after starting at `10.x.0.10`.
 
+The IPs get populated programmatically in the terraform files. But they are
+statically added in the `cloud-config*` files. This should be updated
+eventually.
+
 
 On the **bastion server** we run:
 
