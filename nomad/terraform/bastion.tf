@@ -59,7 +59,7 @@ resource "azurerm_network_interface" "bastion_nic" {
 
   ip_configuration {
     name                          = "${azurerm_resource_group.rg.0.name}-bastion-ipconfig"
-    subnet_id                     = "${azurerm_subnet.subnet.id}"
+    subnet_id                     = "${azurerm_subnet.subnet.0.id}"
     public_ip_address_id          = "${azurerm_public_ip.bastion_public_ip.id}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.0.0.4"
