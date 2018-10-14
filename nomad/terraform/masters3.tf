@@ -1,13 +1,13 @@
 resource "azurerm_network_interface" "master-nic3" {
   count = "${var.master_count}"
 
-  name                = "${azurerm_resource_group.rg.3.name}-master-nic${count.index}"
-  location            = "${azurerm_resource_group.rg.3.location}"
-  resource_group_name = "${azurerm_resource_group.rg.3.name}"
+  name                = "${element(azurerm_resource_group.rg.*.name, 3)}-master-nic${count.index}"
+  location            = "${element(azurerm_resource_group.rg.*.location, 3)}"
+  resource_group_name = "${element(azurerm_resource_group.rg.*.name, 3)}"
 
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.3.name}-ipconfig"
-    subnet_id                     = "${azurerm_subnet.subnet.3.id}"
+    name                          = "${element(azurerm_resource_group.rg.*.name, 3)}-ipconfig"
+    subnet_id                     = "${element(azurerm_subnet.subnet.*.id, 3)}"
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.3.0.${count.index+5}"
   }
@@ -24,9 +24,9 @@ resource "azurerm_network_interface" "master-nic3" {
 resource "azurerm_virtual_machine" "master3" {
   count = "${var.master_count}"
 
-  name                  = "${azurerm_resource_group.rg.3.name}-master${count.index}"
-  location              = "${azurerm_resource_group.rg.3.location}"
-  resource_group_name   = "${azurerm_resource_group.rg.3.name}"
+  name                  = "${element(azurerm_resource_group.rg.*.name, 3)}-master${count.index}"
+  location              = "${element(azurerm_resource_group.rg.*.location, 3)}"
+  resource_group_name   = "${element(azurerm_resource_group.rg.*.name, 3)}"
   vm_size               = "${var.master_vmsize}"
   network_interface_ids = ["${element(azurerm_network_interface.master-nic3.*.id, count.index)}"]
 
@@ -47,14 +47,14 @@ resource "azurerm_virtual_machine" "master3" {
   }
 
   storage_os_disk {
-    name              = "${azurerm_resource_group.rg.3.name}-master-osdisk${count.index}"
+    name              = "${element(azurerm_resource_group.rg.*.name, 3)}-master-osdisk${count.index}"
     managed_disk_type = "StandardSSD_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
   }
 
   os_profile {
-    computer_name  = "${azurerm_resource_group.rg.3.name}-master${count.index}"
+    computer_name  = "${element(azurerm_resource_group.rg.*.name, 3)}-master${count.index}"
     admin_username = "${var.username}"
     custom_data    = "${file(var.cloud_config_master)}"
   }
