@@ -63,17 +63,17 @@ variable "public_key_path" {
 
 # This file is generated and populated with certs from the makefile at runtime.
 variable "cloud_config_master" {
-  default = "../../_tmp/nomad/cloud-config-master.yml"
+  default = "../_tmp/nomad/cloud-config-master.yml"
 }
 
 # This file is generated and populated with certs from the makefile at runtime.
 variable "cloud_config_agent" {
-  default = "../../_tmp/nomad/cloud-config-agent.yml"
+  default = "../_tmp/nomad/cloud-config-agent.yml"
 }
 
 # This file is generated and populated with certs from the makefile at runtime.
 variable "cloud_config_bastion" {
-  default = "../../_tmp/nomad/cloud-config-bastion.yml"
+  default = "../_tmp/nomad/cloud-config-bastion.yml"
 }
 
 variable "image_publisher" {

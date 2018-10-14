@@ -9,8 +9,8 @@ resource "azurerm_public_ip" "bastion_public_ip" {
   domain_name_label            = "${azurerm_resource_group.rg.0.name}-bastion"
 
   tags {
-    app  = "nomad-cluster"
-    type = "bastion"
+    orchestrator = "${var.orchestrator}"
+    type         = "bastion"
   }
 }
 
@@ -46,8 +46,8 @@ resource "azurerm_network_security_group" "bastion_nsg" {
   }
 
   tags {
-    app  = "nomad-cluster"
-    type = "bastion"
+    orchestrator = "${var.orchestrator}"
+    type         = "bastion"
   }
 }
 
@@ -117,7 +117,7 @@ resource "azurerm_virtual_machine" "bastion" {
   }
 
   provisioner "file" {
-    source      = "../sleeping-beauty.hcl"
+    source      = "../nomad/sleeping-beauty.hcl"
     destination = "/home/${var.username}/sleeping-beauty.hcl"
   }
 
