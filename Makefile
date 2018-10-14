@@ -45,34 +45,50 @@ TERRAFORM_FLAGS = -var "client_id=$(CLIENT_ID)"  \
 		-var "master_count=$(MASTER_COUNT)" \
 		-var "agent_count="$(AGENT_COUNT)
 
-MESOS_TFDIR=$(CURDIR)/mesos/terraform
+TERRAFORM_DIR=$(CURDIR)/terraform
+
 .PHONY: mesos-init
 mesos-init:
 	@:$(call check_defined, CLIENT_ID, Azure Client ID)
 	@:$(call check_defined, CLIENT_SECRET, Azure Client Secret)
 	@:$(call check_defined, TENANT_ID, Azure Tenant ID)
 	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
-	cd $(MESOS_TFDIR) && terraform init \
+	cd $(TERRAFORM_DIR) && terraform init \
+		-var "orchestrator=mesos" \
 		$(TERRAFORM_FLAGS)
 
 .PHONY: mesos-apply
 mesos-apply: mesos-init ## Run terraform apply for mesos.
-	cd $(MESOS_TFDIR) && terraform apply \
+	cd $(TERRAFORM_DIR) && terraform apply \
+		-var "orchestrator=mesos" \
 		$(TERRAFORM_FLAGS)
 
 .PHONY: mesos-destroy
 mesos-destroy: mesos-init ## Run terraform destroy for mesos.
-	cd $(MESOS_TFDIR) && terraform destroy \
+	cd $(TERRAFORM_DIR) && terraform destroy \
+		-var "orchestrator=mesos" \
 		$(TERRAFORM_FLAGS)
 
-NOMAD_TFDIR=$(CURDIR)/nomad/terraform
 .PHONY: nomad-init
 nomad-init:
 	@:$(call check_defined, CLIENT_ID, Azure Client ID)
 	@:$(call check_defined, CLIENT_SECRET, Azure Client Secret)
 	@:$(call check_defined, TENANT_ID, Azure Tenant ID)
 	@:$(call check_defined, SUBSCRIPTION_ID, Azure Subscription ID)
-	cd $(NOMAD_TFDIR) && terraform init \
+	cd $(TERRAFORM_DIR) && terraform init \
+		-var "orchestrator=nomad" \
+		$(TERRAFORM_FLAGS)
+
+.PHONY: nomad-apply
+nomad-apply: nomad-init encrypt-config certs-config ## Run terraform apply for nomad.
+	cd $(TERRAFORM_DIR) && terraform apply \
+		-var "orchestrator=nomad" \
+		$(TERRAFORM_FLAGS)
+
+.PHONY: nomad-destroy
+nomad-destroy: nomad-init ## Run terraform destroy for nomad.
+	cd $(TERRAFORM_DIR) && terraform destroy \
+		-var "orchestrator=nomad" \
 		$(TERRAFORM_FLAGS)
 
 TMPDIR:=$(CURDIR)/_tmp
@@ -145,16 +161,6 @@ nomad-certs:
 .PHONY: certs-config
 certs-config: consul-certs nomad-certs
 	CERTDIR=$(CERTDIR) NOMAD_TMPDIR=$(NOMAD_TMPDIR) ./nomad/certs-config.sh
-
-.PHONY: nomad-apply
-nomad-apply: nomad-init encrypt-config certs-config ## Run terraform apply for nomad.
-	cd $(NOMAD_TFDIR) && terraform apply \
-		$(TERRAFORM_FLAGS)
-
-.PHONY: nomad-destroy
-nomad-destroy: nomad-init ## Run terraform destroy for nomad.
-	cd $(NOMAD_TFDIR) && terraform destroy \
-		$(TERRAFORM_FLAGS)
 
 .PHONY: update
 update: update-terraform ## Run all update targets.
