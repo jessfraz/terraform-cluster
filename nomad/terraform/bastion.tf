@@ -2,11 +2,11 @@
 # Bastion Host
 #
 resource "azurerm_public_ip" "bastion_public_ip" {
-  name                         = "${azurerm_resource_group.rg.name}-bastion-public_ip"
-  resource_group_name          = "${azurerm_resource_group.rg.name}"
-  location                     = "${azurerm_resource_group.rg.location}"
+  name                         = "${azurerm_resource_group.rg.0.name}-bastion-public_ip"
+  resource_group_name          = "${azurerm_resource_group.rg.0.name}"
+  location                     = "${azurerm_resource_group.rg.0.location}"
   public_ip_address_allocation = "Static"
-  domain_name_label            = "${azurerm_resource_group.rg.name}-bastion"
+  domain_name_label            = "${azurerm_resource_group.rg.0.name}-bastion"
 
   tags {
     app  = "nomad-cluster"
@@ -15,9 +15,9 @@ resource "azurerm_public_ip" "bastion_public_ip" {
 }
 
 resource "azurerm_network_security_group" "bastion_nsg" {
-  name                = "${azurerm_resource_group.rg.name}-bastion-nsg"
-  location            = "${azurerm_resource_group.rg.location}"
-  resource_group_name = "${azurerm_resource_group.rg.name}"
+  name                = "${azurerm_resource_group.rg.0.name}-bastion-nsg"
+  location            = "${azurerm_resource_group.rg.0.location}"
+  resource_group_name = "${azurerm_resource_group.rg.0.name}"
 
   security_rule {
     name                       = "allow_SSH_in_all"
@@ -52,17 +52,17 @@ resource "azurerm_network_security_group" "bastion_nsg" {
 }
 
 resource "azurerm_network_interface" "bastion_nic" {
-  name                      = "${azurerm_resource_group.rg.name}-bastion-nic"
-  location                  = "${azurerm_resource_group.rg.location}"
-  resource_group_name       = "${azurerm_resource_group.rg.name}"
+  name                      = "${azurerm_resource_group.rg.0.name}-bastion-nic"
+  location                  = "${azurerm_resource_group.rg.0.location}"
+  resource_group_name       = "${azurerm_resource_group.rg.0.name}"
   network_security_group_id = "${azurerm_network_security_group.bastion_nsg.id}"
 
   ip_configuration {
-    name                          = "${azurerm_resource_group.rg.name}-bastion-ipconfig"
+    name                          = "${azurerm_resource_group.rg.0.name}-bastion-ipconfig"
     subnet_id                     = "${azurerm_subnet.subnet.id}"
     public_ip_address_id          = "${azurerm_public_ip.bastion_public_ip.id}"
     private_ip_address_allocation = "Static"
-    private_ip_address            = "172.18.4.4"
+    private_ip_address            = "10.0.0.4"
   }
 
   tags {
@@ -72,9 +72,9 @@ resource "azurerm_network_interface" "bastion_nic" {
 }
 
 resource "azurerm_virtual_machine" "bastion" {
-  name                             = "${azurerm_resource_group.rg.name}-bastion"
-  location                         = "${azurerm_resource_group.rg.location}"
-  resource_group_name              = "${azurerm_resource_group.rg.name}"
+  name                             = "${azurerm_resource_group.rg.0.name}-bastion"
+  location                         = "${azurerm_resource_group.rg.0.location}"
+  resource_group_name              = "${azurerm_resource_group.rg.0.name}"
   vm_size                          = "${var.master_vmsize}"
   network_interface_ids            = ["${azurerm_network_interface.bastion_nic.id}"]
   delete_os_disk_on_termination    = true

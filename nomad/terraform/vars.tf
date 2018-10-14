@@ -2,7 +2,27 @@ variable "prefix" {}
 
 variable "location" {
   description = "The location/region where the resources are created. Changing this forces a new resource to be created."
-  default     = "West US"
+  default     = "westus2"
+}
+
+variable "locations" {
+  default = [
+    "westus2",
+    "eastus",
+    "eastus2",
+    "centralus",
+    "northcentralus",
+  ]
+}
+
+variable "vnet_address_space" {
+  default = [
+    "10.0.0.0/16",
+    "10.1.0.0/16",
+    "10.2.0.0/16",
+    "10.3.0.0/16",
+    "10.4.0.0/16",
+  ]
 }
 
 variable "rg" {
