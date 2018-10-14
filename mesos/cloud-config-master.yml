@@ -105,4 +105,4 @@ write_files:
 - path: "/var/lib/zookeeper/myid"
   permissions: "0644"
   owner: "root"
-  content: $private_ip
+  content: $private_ipv4

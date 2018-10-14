@@ -148,9 +148,9 @@ write_files:
 
         # Allow outgoing connections from this IP to the other nomad servers.
         # Ports come from: https://www.nomadproject.io/docs/configuration/index.html#rpc-2
-        iptables -A OUTPUT -p tcp -s "$private_ip" -d "$host" --dport 4646 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-        iptables -A OUTPUT -p tcp -s "$private_ip" -d "$host" --dport 4647 -m conntrack --ctstate ESTABLISHED -j ACCEPT
-        iptables -A OUTPUT -p tcp -s "$private_ip" -d "$host" --dport 4648 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+        iptables -A OUTPUT -p tcp -s "$private_ipv4" -d "$host" --dport 4646 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+        iptables -A OUTPUT -p tcp -s "$private_ipv4" -d "$host" --dport 4647 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+        iptables -A OUTPUT -p tcp -s "$private_ipv4" -d "$host" --dport 4648 -m conntrack --ctstate ESTABLISHED -j ACCEPT
       done
     fi
 
