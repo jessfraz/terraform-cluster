@@ -45,14 +45,17 @@ variable "public_key_path" {
   default     = "~/.azure/ssh_key"
 }
 
+# This file is generated and populated with certs from the makefile at runtime.
 variable "cloud_config_master" {
   default = "../../_tmp/nomad/cloud-config-master.yml"
 }
 
+# This file is generated and populated with certs from the makefile at runtime.
 variable "cloud_config_agent" {
   default = "../../_tmp/nomad/cloud-config-agent.yml"
 }
 
+# This file is generated and populated with certs from the makefile at runtime.
 variable "cloud_config_bastion" {
   default = "../../_tmp/nomad/cloud-config-bastion.yml"
 }
