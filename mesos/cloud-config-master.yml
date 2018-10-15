@@ -55,7 +55,7 @@ coreos:
           -e MESOS_IP=$private_ipv4 \
           -e MESOS_HOSTNAME=$private_ipv4 \
           -e MESOS_CLUSTER=mesos-cluster \
-          -e MESOS_ZK=zk://10.0.0.5:2181,10.0.0.6:2181,10.0.0.7:2181,10.0.0.8:2181,10.0.0.9:2181/mesos \
+          -e MESOS_ZK=zk://ZOOKEEPER_MASTER_IPS/mesos \
           -e MESOS_LOG_DIR=/var/log/mesos/master \
           -e MESOS_WORK_DIR=/var/lib/mesos/master \
           -e MESOS_QUORUM=2 \
@@ -97,11 +97,7 @@ write_files:
     # Purge task interval in hours
     # Set to "0" to disable auto purge feature
     #autopurge.purgeInterval=1
-    server.1=10.0.0.5:2888:3888
-    server.2=10.0.0.6:2888:3888
-    server.3=10.0.0.7:2888:3888
-    server.4=10.0.0.8:2888:3888
-    server.5=10.0.0.9:2888:3888
+    ZOOKEEPER_CONFIG_MASTER_IPS
 - path: "/var/lib/zookeeper/myid"
   permissions: "0644"
   owner: "root"

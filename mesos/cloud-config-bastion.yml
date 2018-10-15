@@ -28,10 +28,10 @@ coreos:
           -e LIBPROCESS_PORT=9090 \
           --net host \
           mesosphere/marathon:v1.7.166 \
-          --master zk://10.0.0.5:2181,10.0.0.6:2181,10.0.0.7:2181,10.0.0.8:2181,10.0.0.9:2181/mesos \
-          --zk zk://10.0.0.5:2181,10.0.0.6:2181,10.0.0.7:2181,10.0.0.8:2181,10.0.0.9:2181/marathon \
+          --master zk://ZOOKEEPER_MASTER_IPS/mesos \
+          --zk zk://ZOOKEEPER_MASTER_IPS/marathon \
           --checkpoint \
-          --hostname 10.0.0.4"
+          --hostname $private_ipv4"
       ExecStop=/usr/bin/docker stop marathon
 
       [Install]

@@ -32,6 +32,8 @@ LOCATION := westus2
 MASTER_COUNT := 5
 AGENT_COUNT := 18
 
+TMPDIR:=$(CURDIR)/_tmp
+
 .PHONY: ips
 ips:
 	$(foreach NUM,$(shell [[ $(MASTER_COUNT) == 0 ]] || seq 5 1 $$(( $(MASTER_COUNT) + 4))),$(call get_master_ips,$(NUM)))
@@ -66,11 +68,27 @@ TERRAFORM_FLAGS = -var "client_id=$(CLIENT_ID)"  \
 		-var "master_count=$(MASTER_COUNT)" \
 		-var "agent_count="$(AGENT_COUNT)
 
-MESOS_TERRAFORM_FLAGS = -v "cloud_config_master=../mesos/cloud-config-master.yml" \
-	-v "cloud_config_bastion=../mesos/cloud-config-bastion.yml" \
-	-v "cloud_config_agent=../mesos/cloud-config-agent.yml"
+MESOS_TERRAFORM_FLAGS = -v "cloud_config_master=../_tmp/mesos/cloud-config-master.yml" \
+	-v "cloud_config_bastion=../_tmp/mesos/cloud-config-bastion.yml" \
+	-v "cloud_config_agent=../_tmp/mesos/cloud-config-agent.yml"
 
 TERRAFORM_DIR=$(CURDIR)/terraform
+
+MESOS_TMPDIR=$(TMPDIR)/mesos
+.PHONY: mesos-config
+mesos-config: clean ips $(MESOS_TMPDIR) $(MESOS_TMPDIR)/cloud-config-master.yml $(MESOS_TMPDIR)/cloud-config-agent.yml $(MESOS_TMPDIR)/cloud-config-bastion.yml
+
+$(MESOS_TMPDIR):
+	mkdir -p $(MESOS_TMPDIR)
+
+$(MESOS_TMPDIR)/cloud-config-master.yml:
+	sed "s#ZOOKEEPER_MASTER_IPS#$(subst ${space},:2181${comma},$(MASTER_IPS))#g" $(CURDIR)/mesos/cloud-config-master.yml > $@
+
+$(MESOS_TMPDIR)/cloud-config-agent.yml:
+	sed "s#ZOOKEEPER_MASTER_IPS#$(subst ${space},:2181${comma},$(MASTER_IPS))#g" $(CURDIR)/mesos/cloud-config-agent.yml > $@
+
+$(MESOS_TMPDIR)/cloud-config-bastion.yml:
+	sed "s#ZOOKEEPER_MASTER_IPS#$(subst ${space},:2181${comma},$(MASTER_IPS))#g" $(CURDIR)/mesos/cloud-config-bastion.yml > $@
 
 .PHONY: mesos-init
 mesos-init:
@@ -84,7 +102,7 @@ mesos-init:
 		$(TERRAFORM_FLAGS)
 
 .PHONY: mesos-apply
-mesos-apply: mesos-init ## Run terraform apply for mesos.
+mesos-apply: mesos-init mesos-config ## Run terraform apply for mesos.
 	cd $(TERRAFORM_DIR) && terraform apply \
 		-var "orchestrator=mesos" \
 		$(MESOS_TERRAFORM_FLAGS) \
@@ -119,9 +137,7 @@ nomad-destroy: nomad-init ## Run terraform destroy for nomad.
 		-var "orchestrator=nomad" \
 		$(TERRAFORM_FLAGS)
 
-TMPDIR:=$(CURDIR)/_tmp
 NOMAD_TMPDIR=$(TMPDIR)/nomad
-
 CONSUL_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/consul keygen)
 NOMAD_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/nomad operator keygen)
 .PHONY: nomad-config
