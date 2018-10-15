@@ -4,6 +4,9 @@ null :=
 space := ${null} ${null}
 ${space} := ${space} # ${ } is a space.
 comma := ,
+define newline
+\n
+endef
 
 # if this session isn't interactive, then we don't want to allocate a
 # TTY, which would fail, but if it is interactive, we do want to attach
@@ -38,6 +41,7 @@ TMPDIR:=$(CURDIR)/_tmp
 ips:
 	$(foreach NUM,$(shell [[ $(MASTER_COUNT) == 0 ]] || seq 5 1 $$(( $(MASTER_COUNT) + 4))),$(call get_master_ips,$(NUM)))
 	@echo "Master IPs: $(MASTER_IPS)"
+	$(foreach NUM,$(shell [[ $(MASTER_COUNT) == 0 ]] || seq 5 1 $$(( $(MASTER_COUNT) + 4))),$(call get_zookeeper_config_ips,$(NUM),$(shell expr $(NUM) - 4)))
 
 # Define the function to populate the MASTER_IPS variable with the
 # corresponding IPs of the master private_ips.
@@ -46,6 +50,10 @@ ips:
 # # @param number	  Number of the master.
 define get_master_ips
 $(eval MASTER_IPS := $(MASTER_IPS) 10.0.0.$(NUM) 10.1.0.$(NUM) 10.2.0.$(NUM))
+endef
+
+define get_zookeeper_config_ips
+$(eval ZOOKEEPER_CONFIG_IPS := $(ZOOKEEPER_CONFIG_IPS) server.$(2)=10.0.0.$(1):2888:3888)
 endef
 
 .PHONY: test
@@ -82,13 +90,14 @@ $(MESOS_TMPDIR):
 	mkdir -p $(MESOS_TMPDIR)
 
 $(MESOS_TMPDIR)/cloud-config-master.yml:
-	sed "s#ZOOKEEPER_MASTER_IPS#$(subst ${space},:2181${comma},$(MASTER_IPS))#g" $(CURDIR)/mesos/cloud-config-master.yml > $@
+	sed "s#ZOOKEEPER_MASTER_IPS#$(subst ${space},:2181${comma},$(MASTER_IPS)):2181#g" $(CURDIR)/mesos/cloud-config-master.yml > $@
+	sed -i "s#ZOOKEEPER_CONFIG_MASTER_IPS#$(subst ${space},${newline}    ,$(ZOOKEEPER_CONFIG_IPS))#g" $@
 
 $(MESOS_TMPDIR)/cloud-config-agent.yml:
-	sed "s#ZOOKEEPER_MASTER_IPS#$(subst ${space},:2181${comma},$(MASTER_IPS))#g" $(CURDIR)/mesos/cloud-config-agent.yml > $@
+	sed "s#ZOOKEEPER_MASTER_IPS#$(subst ${space},:2181${comma},$(MASTER_IPS)):2181#g" $(CURDIR)/mesos/cloud-config-agent.yml > $@
 
 $(MESOS_TMPDIR)/cloud-config-bastion.yml:
-	sed "s#ZOOKEEPER_MASTER_IPS#$(subst ${space},:2181${comma},$(MASTER_IPS))#g" $(CURDIR)/mesos/cloud-config-bastion.yml > $@
+	sed "s#ZOOKEEPER_MASTER_IPS#$(subst ${space},:2181${comma},$(MASTER_IPS)):2181#g" $(CURDIR)/mesos/cloud-config-bastion.yml > $@
 
 .PHONY: mesos-init
 mesos-init:
