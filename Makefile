@@ -108,7 +108,7 @@ nomad-init:
 		$(TERRAFORM_FLAGS)
 
 .PHONY: nomad-apply
-nomad-apply: nomad-init encrypt-config certs-config ## Run terraform apply for nomad.
+nomad-apply: nomad-init nomad-config certs-config ## Run terraform apply for nomad.
 	cd $(TERRAFORM_DIR) && terraform apply \
 		-var "orchestrator=nomad" \
 		$(TERRAFORM_FLAGS)
@@ -124,8 +124,8 @@ NOMAD_TMPDIR=$(TMPDIR)/nomad
 
 CONSUL_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/consul keygen)
 NOMAD_GOSSIP_ENCRYPTION_SECRET=$(shell docker run --rm r.j3ss.co/nomad operator keygen)
-.PHONY: encrypt-config
-encrypt-config: clean ips $(NOMAD_TMPDIR) $(NOMAD_TMPDIR)/cloud-config-master.yml $(NOMAD_TMPDIR)/cloud-config-agent.yml $(NOMAD_TMPDIR)/cloud-config-bastion.yml
+.PHONY: nomad-config
+nomad-config: clean ips $(NOMAD_TMPDIR) $(NOMAD_TMPDIR)/cloud-config-master.yml $(NOMAD_TMPDIR)/cloud-config-agent.yml $(NOMAD_TMPDIR)/cloud-config-bastion.yml
 
 $(NOMAD_TMPDIR):
 	mkdir -p $(NOMAD_TMPDIR)
