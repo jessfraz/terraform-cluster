@@ -1,3 +1,5 @@
+SHELL := /bin/bash
+
 # if this session isn't interactive, then we don't want to allocate a
 # TTY, which would fail, but if it is interactive, we do want to attach
 # so that the user can send e.g. ^C through.
@@ -24,6 +26,20 @@ LOCATION := westus2
 
 MASTER_COUNT := 5
 AGENT_COUNT := 18
+
+.PHONY: ips
+ips:
+	$(foreach NUM,$(shell [[ $(MASTER_COUNT) == 0 ]] || seq 5 1 $$(( $(MASTER_COUNT) + 4))),$(call get_master_ips,$(NUM)))
+	@echo "Master IPs: $(MASTER_IPS)"
+
+# Define the function to populate the MASTER_IPS variable with the
+# corresponding IPs of the master private_ips.
+# This assumes you are using three different regions and your terraform files
+# set the cidr ranges to 10.0.0.0/16 10.1.0.0/16 and 10.2.0.0/16
+# # @param number	  Number of the master.
+define get_master_ips
+$(eval MASTER_IPS := $(MASTER_IPS) 10.0.0.$(NUM) 10.1.0.$(NUM) 10.2.0.$(NUM))
+endef
 
 .PHONY: test
 test: shellcheck ## Runs all the tests.
