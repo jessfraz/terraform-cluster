@@ -90,7 +90,7 @@ write_files:
       servers = [NOMAD_MASTER_IPS]
 
       # turn off the default driver.
-      "driver.raw_exec.enable" = "0"
+      #"driver.raw_exec.enable" = "0"
 
       reserved {
         cpu            = 1
