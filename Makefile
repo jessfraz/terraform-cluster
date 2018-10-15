@@ -134,19 +134,19 @@ $(NOMAD_TMPDIR)/cloud-config-master.yml:
 	sed "s#CONSUL_GOSSIP_ENCRYPTION_SECRET#$(CONSUL_GOSSIP_ENCRYPTION_SECRET)#g" $(CURDIR)/nomad/cloud-config-master.yml > $@
 	sed -i "s#NOMAD_GOSSIP_ENCRYPTION_SECRET#$(NOMAD_GOSSIP_ENCRYPTION_SECRET)#g" $@
 	sed -i "s#COMMA_SEPARATED_MASTER_IPS#$(subst ${space},${comma},$(MASTER_IPS))#g" $@
-	sed -i "s#NOMAD_MASTER_IPS#\"$(subst ${space},\", \",$(MASTER_IPS))\"#g" $@
+	sed -i "s#NOMAD_MASTER_IPS#\"$(subst ${space},\"${comma} \",$(MASTER_IPS))\"#g" $@
 
 $(NOMAD_TMPDIR)/cloud-config-agent.yml:
 	sed "s#CONSUL_GOSSIP_ENCRYPTION_SECRET#$(CONSUL_GOSSIP_ENCRYPTION_SECRET)#g" $(CURDIR)/nomad/cloud-config-agent.yml > $@
 	sed -i "s#NOMAD_GOSSIP_ENCRYPTION_SECRET#$(NOMAD_GOSSIP_ENCRYPTION_SECRET)#g" $@
 	sed -i "s#COMMA_SEPARATED_MASTER_IPS#$(subst ${space},${comma},$(MASTER_IPS))#g" $@
-	sed -i "s#NOMAD_MASTER_IPS#\"$(subst ${space},\", \",$(MASTER_IPS))\"#g" $@
+	sed -i "s#NOMAD_MASTER_IPS#\"$(subst ${space},\"${comma} \",$(MASTER_IPS))\"#g" $@
 
 $(NOMAD_TMPDIR)/cloud-config-bastion.yml:
 	sed "s#CONSUL_GOSSIP_ENCRYPTION_SECRET#$(CONSUL_GOSSIP_ENCRYPTION_SECRET)#g" $(CURDIR)/nomad/cloud-config-bastion.yml > $@
 	sed -i "s#NOMAD_GOSSIP_ENCRYPTION_SECRET#$(NOMAD_GOSSIP_ENCRYPTION_SECRET)#g" $@
 	sed -i "s#COMMA_SEPARATED_MASTER_IPS#$(subst ${space},${comma},$(MASTER_IPS))#g" $@
-	sed -i "s#NOMAD_MASTER_IPS#\"$(subst ${space},\", \",$(MASTER_IPS))\"#g" $@
+	sed -i "s#NOMAD_MASTER_IPS#\"$(subst ${space},\"${comma} \",$(MASTER_IPS))\"#g" $@
 
 CERTDIR=$(CURDIR)/nomad/certs
 
