@@ -21,7 +21,7 @@ coreos:
       Restart=on-failure
       RestartSec=20
       TimeoutStartSec=0
-      Environment=NOMAD_HOSTS=10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8,10.0.0.9,10.1.0.5,10.1.0.6,10.1.0.7,10.1.0.8,10.1.0.9,10.2.0.5,10.2.0.6,10.2.0.7,10.2.0.8,10.2.0.9
+      Environment=NOMAD_HOSTS=COMMA_SEPARATED_MASTER_IPS
       Environment=NOMAD_CIDRS=10.0.0.0/16,10.1.0.0/16,10.2.0.0/16
       ExecStart=/bin/bash /etc/scripts/iptables-firewall.sh
 
@@ -183,7 +183,7 @@ write_files:
 
     client {
       enabled          = true
-      servers = ["10.0.0.5:4647","10.0.0.6:4647","10.0.0.7:4647","10.0.0.8:4647","10.0.0.9:4647","10.1.0.5:4647","10.1.0.6:4647","10.1.0.7:4647","10.1.0.8:4647","10.1.0.9:4647","10.2.0.5:4647","10.2.0.6:4647","10.2.0.7:4647","10.2.0.8:4647","10.2.0.9:4647"]
+      servers = [NOMAD_MASTER_IPS]
 
       options = {
         "driver.whitelist" = "docker"
