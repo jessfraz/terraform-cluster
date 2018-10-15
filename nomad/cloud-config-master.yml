@@ -54,7 +54,7 @@ coreos:
       StandardOutput=console
       Restart=on-failure
       RestartSec=20
-      Environment=NOMAD_HOSTS=10.0.0.5,10.0.0.6,10.0.0.7,10.0.0.8,10.0.0.9,10.1.0.5,10.1.0.6,10.1.0.7,10.1.0.8,10.1.0.9,10.2.0.5,10.2.0.6,10.2.0.7,10.2.0.8,10.2.0.9
+      Environment=NOMAD_HOSTS=COMMA_SEPARATED_MASTER_IPS
       ExecStart=/bin/bash /etc/consul/join.sh
   - name: nomad.service
     command: start
