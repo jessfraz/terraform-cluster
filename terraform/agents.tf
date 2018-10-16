@@ -12,6 +12,8 @@ resource "azurerm_virtual_machine_scale_set" "agent" {
 
   upgrade_policy_mode = "Manual"
 
+  single_placement_group = false
+
   sku {
     name     = "${var.agent_vmsize}"
     tier     = "Standard"
