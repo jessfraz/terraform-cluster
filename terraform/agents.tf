@@ -39,7 +39,7 @@ resource "azurerm_virtual_machine_scale_set" "agent" {
 
   storage_profile_os_disk {
     name              = ""
-    managed_disk_type = "StandardSSD_LRS"
+    managed_disk_type = "Standard_LRS"
     caching           = "ReadWrite"
     create_option     = "FromImage"
   }

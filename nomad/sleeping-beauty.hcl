@@ -15,7 +15,7 @@ job "sleeping-beauty" {
   # placed on the same host.
   group "sb-group" {
     # Specify the number of these tasks we want.
-    count = 10000
+    count = 1000000
 
     # Create an individual task (unit of work). This particular
     # task utilizes a Docker container to front a web application.
